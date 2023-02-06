@@ -1,10 +1,8 @@
 digraph "DirectedGraph" {
-graph [label = "bq3", labelloc=t, concentrate = true];
+graph [label = "banque 3", labelloc=t, concentrate = true];
 "ast"[ label="AstClass" ]
 "public"[ label="(public,Modifier)" ]
 "Name"[ label="(Account,Name)" ]
-"Methods"[ label="(Methods" ]
-"Attributs"[lable="(Attributs)"]
 
 "string1"[label="(String,SimpleType)"]
 "double1"[label="(double,PrimitiveType)" ]
@@ -16,20 +14,18 @@ graph [label = "bq3", labelloc=t, concentrate = true];
 
 "ast" -> "public"
 "ast" -> "Name"
-"ast" -> "Methods"
-"ast" -> "Attributs"
 
-"1" [ label="(Attribu)" ]
-"2" [ label="(Attribu)" ]
-"4" [ label="(Attribu)" ]
+"1" [ label="(Attr)" ]
+"2" [ label="(Attr)" ]
+"4" [ label="(Attr)" ]
 
-"Attributs" -> "1"
+"ast" -> "1"
 "1" -> "string1"
 "1" -> "id"
-"Attributs" -> "2"
+"ast" -> "2"
 "2" -> "double1"
 "2" -> "balance"
-"Attributs" -> "4"
+"ast" -> "4"
 "4" -> "int"
 "4" -> "currency"
 
@@ -177,11 +173,11 @@ graph [label = "bq3", labelloc=t, concentrate = true];
 
 
 
-"Methods" -> "932285561"
-"Methods" -> "597190999"
-"Methods" -> "1344199921"
-"Methods" -> "1277009227"
-"Methods" -> "671467883"
+"ast" -> "932285561"
+"ast" -> "597190999"
+"ast" -> "1344199921"
+"ast" -> "1277009227"
+"ast" -> "671467883"
 
 
 
