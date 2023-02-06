@@ -1,0 +1,188 @@
+digraph "DirectedGraph" {
+graph [label = "bq3", labelloc=t, concentrate = true];
+"ast"[ label="AstClass" ]
+"public"[ label="(public,Modifier)" ]
+"Name"[ label="(Account,Name)" ]
+"Methods"[ label="(Methods" ]
+"Attributs"[lable="(Attributs)"]
+
+"string1"[label="(String,SimpleType)"]
+"double1"[label="(double,PrimitiveType)" ]
+"int"[label="(double,PrimitiveType)" ]
+
+"id"[ label="(id,Name)" ]
+"balance"[ label="(balance,Name)" ]
+"currency"[ label="(currency,Name)" ]
+
+"ast" -> "public"
+"ast" -> "Name"
+"ast" -> "Methods"
+"ast" -> "Attributs"
+
+"1" [ label="(Attribu)" ]
+"2" [ label="(Attribu)" ]
+"4" [ label="(Attribu)" ]
+
+"Attributs" -> "1"
+"1" -> "string1"
+"1" -> "id"
+"Attributs" -> "2"
+"2" -> "double1"
+"2" -> "balance"
+"Attributs" -> "4"
+"4" -> "int"
+"4" -> "currency"
+
+"1277009227" [ label="(MethodDeclar)" ]
+"2065857934" [ label="(public,Modifier)" ]
+"191430154" [ label="(int,PrimitiveType)" ]
+"1158726741" [ label="(getCurrency,Name)" ]
+"1708570684" [ label="(Block)" ]
+"225482281" [ label="(ReturnStatement)" ]
+"817448612" [ label="(currency,Name)" ]
+"1277009227" -> "2065857934"
+"1277009227" -> "191430154"
+"1277009227" -> "1158726741"
+"1277009227" -> "1708570684"
+"1708570684" -> "225482281"
+"225482281" -> "817448612"
+
+"1344199921" [ label="(MethodDeclar)" ]
+"2025269734" [ label="(public,Modifier)" ]
+"1800031768" [ label="(Account,Name)" ]
+"667447085" [ label="(VarDeclar)" ]
+"26728049" [ label="(String,SimpleType)" ]
+"2041416495" [ label="(i,Name)" ]
+"502800944" [ label="(VarDeclar)" ]
+"576936864" [ label="(double,PrimitiveType)" ]
+"331418503" [ label="(m,Name)" ]
+"111156771" [ label="(Block)" ]
+"1519736165" [ label="(Expr)" ]
+"1653844940" [ label="(=,Assignment)" ]
+"2039810346" [ label="(id,Name)" ]
+"2143437117" [ label="(i,Name)" ]
+"260840925" [ label="(Expr)" ]
+"1891502635" [ label="(=,Assignment)" ]
+"557023567" [ label="(balance,Name)" ]
+"1276504061" [ label="(m,Name)" ]
+"1344199921" -> "2025269734"
+"1344199921" -> "1800031768"
+"1344199921" -> "667447085"
+"667447085" -> "26728049"
+"667447085" -> "2041416495"
+"1344199921" -> "502800944"
+"502800944" -> "576936864"
+"502800944" -> "331418503"
+"1344199921" -> "111156771"
+"111156771" -> "1519736165"
+"1519736165" -> "1653844940"
+"1653844940" -> "2039810346"
+"1653844940" -> "2143437117"
+"111156771" -> "260840925"
+"260840925" -> "1891502635"
+"1891502635" -> "557023567"
+"1891502635" -> "1276504061"
+
+"597190999" [ label="MethodDeclaration)" ]
+"603443293" [ label="(public,Modifier)" ]
+"510854293" [ label="(void,PrimitiveType)" ]
+"2100961961" [ label="(deposit,Name)" ]
+"487075464" [ label="(VarDeclaration)" ]
+"6320204" [ label="(double,PrimitiveType)" ]
+"112302969" [ label="(amount,Name)" ]
+"707976812" [ label="(Block)" ]
+"1989335500" [ label="(Expr)" ]
+"1978869058" [ label="(Assignment)" ]
+"2131952342" [ label="(FieldAccess)" ]
+"1139700455" [ label="(this,ThisExpression)" ]
+"592717454" [ label="(balance,Name)" ]
+"1340565491" [ label="(amount,Name)" ]
+"597190999" -> "603443293"
+"597190999" -> "510854293"
+"597190999" -> "2100961961"
+"597190999" -> "487075464"
+"487075464" -> "6320204"
+"487075464" -> "112302969"
+"597190999" -> "707976812"
+"707976812" -> "1989335500"
+"1989335500" -> "1978869058"
+"1978869058" -> "2131952342"
+"2131952342" -> "1139700455"
+"2131952342" -> "592717454"
+"1978869058" -> "1340565491"
+
+"671467883" [ label="MethodDeclaration" ]
+"407797359" [ label="(public,Modifier)" ]
+"802600648" [ label="(double,PrimitiveType)" ]
+"1543148594" [ label="(getAmount,Name)" ]
+"1572967156" [ label="(Block)"  ]
+"574568003" [ label="(ReturnStatement)"  ]
+"952486989" [ label="(balance,Name)"  ]
+"671467883" -> "407797359"
+"671467883" -> "802600648"
+"671467883" -> "1543148594"
+"671467883" -> "1572967156"
+"1572967156" -> "574568003"
+"574568003" -> "952486989"
+
+"932285561" [ label="(MethodDeclar)" ]
+"2028555727" [ label="(public,Modifier)" ]
+"591391158" [ label="(void,PrimitiveType)" ]
+"898557489" [ label="(withdraw,Name)" ]
+"247944893" [ label="(double amount,VarDeclar)" ]
+"1014166943" [ label="(double,PrimitiveType,)" ]
+"1625082366" [ label="(amount,Name)" ]
+"572593338" [ label="(Block)" ]
+"384294141" [ label="(IfStatement)" ]
+"1024597427" [ label="(<=,InfixExpression)" ]
+"990355670" [ label="(amount,Name)" ]
+"296347592" [ label="(balance,Name)" ]
+"956420404" [ label="(Block)" ]
+"349420578" [ label="(Expr)" ]
+"315932542" [ label="(-=,Assignment)" ]
+"1277019227" [ label="(balance,Name)" ]
+"2065857933" [ label="(amount,Name)" ]
+"1914311543" [ label="(Block)" ]
+"1157726741" [ label="(Expr)" ]
+"1708570683" [ label="(MethodInvocation)" ]
+"225472281" [ label="(System.out,QualifiedName)" ]
+"817348612" [ label="(System,Name)" ]
+"2045766957" [ label="(out,Name)" ]
+"690521419" [ label="(println,Name)" ]
+"665726928" [ label="(\"Insuffisent balance..!!\",StringLiteral)" ]
+"932285561" -> "2028555727"
+"932285561" -> "591391158"
+"932285561" -> "898557489"
+"932285561" -> "247944893"
+"247944893" -> "1014166943"
+"247944893" -> "1625082366"
+"932285561" -> "572593338"
+"572593338" -> "384294141"
+"384294141" -> "1024597427"
+"1024597427" -> "990355670"
+"1024597427" -> "296347592"
+"384294141" -> "956420404"
+"956420404" -> "349420578"
+"349420578" -> "315932542"
+"315932542" -> "1277019227"
+"315932542" -> "2065857933"
+"384294141" -> "1914311543"
+"1914311543" -> "1157726741"
+"1157726741" -> "1708570683"
+"1708570683" -> "225472281"
+"225472281" -> "817348612"
+"225472281" -> "2045766957"
+"1708570683" -> "690521419"
+"1708570683" -> "665726928"
+
+
+
+"Methods" -> "932285561"
+"Methods" -> "597190999"
+"Methods" -> "1344199921"
+"Methods" -> "1277009227"
+"Methods" -> "671467883"
+
+
+
+}
