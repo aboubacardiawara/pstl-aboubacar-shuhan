@@ -3,8 +3,6 @@ graph [label = "bq4", labelloc=t, concentrate = true];
 "ast"[ label="AstClass" ]
 "public"[ label="(public,Modifier)" ]
 "Name"[ label="(Account,Name)" ]
-"Methods"[ label="(Methods" ]
-"Attributs"[lable="(Attributs)"]
 
 "string1"[label="(String,SimpleType)"]
 "double1"[label="(double,PrimitiveType)" ]
@@ -18,24 +16,24 @@ graph [label = "bq4", labelloc=t, concentrate = true];
 
 "ast" -> "public"
 "ast" -> "Name"
-"ast" -> "Methods"
-"ast" -> "Attributs"
 
-"1" [ label="(Attribu)" ]
-"2" [ label="(Attribu)" ]
-"3" [ label="(Attribu)" ]
-"4" [ label="(Attribu)" ]
 
-"Attributs" -> "1"
+
+"1" [ label="(Attr)" ]
+"2" [ label="(Attr)" ]
+"3" [ label="(Attr)" ]
+"4" [ label="(Attr)" ]
+
+"ast" -> "1"
 "1" -> "string1"
 "1" -> "id"
-"Attributs" -> "2"
+"ast" -> "2"
 "2" -> "double1"
 "2" -> "balance"
-"Attributs" -> "3"
+"ast" -> "3"
 "3" -> "double2"
 "3" -> "limit"
-"Attributs" -> "4"
+"ast" -> "4"
 "4" -> "int"
 "4" -> "currency"
 
@@ -200,12 +198,12 @@ graph [label = "bq4", labelloc=t, concentrate = true];
 "817348612" -> "2045766957"
 "2045766957" -> "690521419"
 
-"Methods" -> "1914301543"
-"Methods" -> "1139700454"
-"Methods" -> "597190999"
-"Methods" -> "1344199921"
-"Methods" -> "1277009227"
-"Methods" -> "671467883"
+"ast" -> "1914301543"
+"ast" -> "1139700454"
+"ast" -> "597190999"
+"ast" -> "1344199921"
+"ast" -> "1277009227"
+"ast" -> "671467883"
 
 
 
