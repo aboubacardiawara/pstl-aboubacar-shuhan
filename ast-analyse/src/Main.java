@@ -7,6 +7,9 @@ import java.nio.file.Paths;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 import visitor.Greater;
 
@@ -32,6 +35,14 @@ public class Main {
         
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(source);
+		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+		cu.accept(new ASTVisitor() {
+			public boolean visit(MethodDeclaration node) {
+				System.out.println("we just visit a method");
+				return false;
+				
+			}
+		});
 		
 	}
 }
