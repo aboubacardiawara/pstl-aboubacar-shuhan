@@ -1,48 +1,51 @@
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.channels.NonWritableChannelException;
 
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 
+import fusion.Merger;
 import visitor.Greater;
 
 public class Main {
 
 	public static void main(String[] args) {
 		String rootDirectoryString = "./bank-variants/";
-		String pkg = "bs/bs/";  
-		String filePath= rootDirectoryString + "Variant00001/" + pkg + "Account.java";
+		String pkg = "bs/bs/";
+		String filePath = rootDirectoryString + "Variant00001/" + pkg + "RandomClass.java";
+		String filePath2 = rootDirectoryString + "Variant00001/" + pkg + "RandomClass2.java";
 		File file = new File(filePath);
+		File file2 = new File(filePath2);
+		CompilationUnit cu = getCompilationUnit(file);
+		CompilationUnit cu2 = getCompilationUnit(file2);
+		
+		Merger merger = new Merger();
+		
+		ASTNode n1 = cu.getRoot();
+		ASTNode n2 = cu2.getRoot();
+		//System.out.println();
+		ASTNode result = merger.merge(n1, n2);
+		n1.accept(new Greater());
+	}
+
+	private static CompilationUnit getCompilationUnit(File file) {
 		char[] source = null;
 		try {
 			FileReader reader = new FileReader(file);
-			source = new char[(int) file.length()]; // create char[] array to store file contents
+			source = new char[(int) file.length()];
 			reader.read(source);
-			reader.close(); // close the FileReader object
+			reader.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} // read file contents into the char[] array
-        // do something with the char[] array, such as print it
-        System.out.println(source);
-        
+		}
+
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(source);
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-		cu.accept(new ASTVisitor() {
-			public boolean visit(MethodDeclaration node) {
-				System.out.println("we just visit a method");
-				return false;
-				
-			}
-		});
-		
+		return cu;
 	}
 }
