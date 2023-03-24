@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -22,53 +23,23 @@ public class Merger {
 	 * @param n2
 	 * @return
 	 */
-	public List<ASTNode> merge(ASTNode n1, ASTNode n2) {
+	public  CompilationUnit fusion(CompilationUnit cu1, CompilationUnit cu2) {
+        // On crée un nouvel objet AST
+        AST ast = AST.newAST(AST.JLS3);
 
-		List<ASTNode> res = new ArrayList<>();
-		if (n1 instanceof MethodDeclaration && n2 instanceof MethodDeclaration) {
+        // On crée une nouvelle CompilationUnit vide avec le nouvel AST
+        CompilationUnit newCu = (CompilationUnit) ast.createInstance(CompilationUnit.class);
 
-			// si les deux ont la même signature
-			if (getMethodSignature((MethodDeclaration) n1).equals(getMethodSignature((MethodDeclaration) n2))) {
-				res.add(n1);
-				return res;
-			} else {
-				res.add(n1);
-				res.add(n2);
-				return res;
-			}
-		} else if (n1 instanceof TypeDeclaration && n2 instanceof TypeDeclaration) {
-			TypeDeclaration c1 = (TypeDeclaration) n1;
-			TypeDeclaration c2 = (TypeDeclaration) n2;
-			if (c1.getName().equals(c2.getName())) {
-				MethodDeclaration[] allMethod1 = c1.getMethods();
-				MethodDeclaration[] allMethod2 = c2.getMethods();
+        // On copie les informations communes des deux CompilationUnit dans la nouvelle CompilationUnit
+        newCu.setPackage(cu1.getPackage());
+        newCu.imports().addAll(cu1.imports());
+        newCu.types().addAll(cu1.types());
 
-				// Union des methodes.
-				Map<String, MethodDeclaration> newMethods = new HashMap<>();
-				for (MethodDeclaration method : allMethod1) {
-					newMethods.put(getMethodSignature(method), method);
-				}
-				for (MethodDeclaration method : allMethod2) {
-					newMethods.put(getMethodSignature(method), method);
-				}
-				
-				replaceMethodDeclarations(c2, (List<MethodDeclaration>) newMethods.values());
-				
-				res.add(c1);
-				return res;
-			} else {
-				res.add(c1);
-				res.add(c2);
-				return res;
-			}
+        // On ajoute les éléments spécifiques de la deuxième CompilationUnit dans la nouvelle CompilationUnit
+        newCu.types().addAll(cu2.types());
 
-		} else {
-			if (n1 instanceof CompilationUnit && n2 instanceof CompilationUnit) {
-				
-			}
-			return merge(n1, n2);
-		}
-	}
+        return newCu;
+    }
 
 	private String getMethodSignature(MethodDeclaration method) {
 		StringBuilder signature = new StringBuilder();
@@ -102,5 +73,6 @@ public class Merger {
 			typeDeclaration.bodyDeclarations().add(methodDeclaration);
 		}
 	}
+
 
 }

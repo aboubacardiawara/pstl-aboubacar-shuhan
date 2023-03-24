@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileReader;
 import java.nio.channels.NonWritableChannelException;
+import java.util.List;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -28,8 +29,9 @@ public class Main {
 		ASTNode n1 = cu.getRoot();
 		ASTNode n2 = cu2.getRoot();
 		//System.out.println();
-		ASTNode result = merger.merge(n1, n2);
-		n1.accept(new Greater());
+		CompilationUnit result = merger.fusion(cu, cu2);
+		
+		result.accept(new Greater());
 	}
 
 	private static CompilationUnit getCompilationUnit(File file) {
