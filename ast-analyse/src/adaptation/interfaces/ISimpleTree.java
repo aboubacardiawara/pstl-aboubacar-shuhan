@@ -1,8 +1,10 @@
-package adaptation;
+package adaptation.interfaces;
 
 import java.util.List;
 
-public interface SimpleTreeI {
+import adaptation.SimpleNode;
+
+public interface ISimpleTree {
     public SimpleNode getRoot();
     public List<SimpleNode> getChildren();
 }

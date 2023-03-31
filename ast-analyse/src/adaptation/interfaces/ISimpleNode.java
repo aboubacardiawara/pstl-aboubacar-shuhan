@@ -1,8 +1,10 @@
-package adaptation;
+package adaptation.interfaces;
 
 import java.util.Set;
 
-public interface SimpleNodeI {
+import adaptation.SimpleNodeType;
+
+public interface ISimpleNode {
     public String getName();
     public int getId();
     public Set<Integer> getVariants(); 
