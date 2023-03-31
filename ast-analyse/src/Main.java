@@ -28,10 +28,7 @@ public class Main {
 		
 		ASTNode n1 = cu.getRoot();
 		ASTNode n2 = cu2.getRoot();
-		//System.out.println();
-		CompilationUnit result = merger.fusion(cu, cu2);
 		
-		result.accept(new Greater());
 	}
 
 	private static CompilationUnit getCompilationUnit(File file) {
