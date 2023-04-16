@@ -57,12 +57,8 @@ public class Main {
 		List<File> files = filesPath.stream().map(path -> new File(path)).collect(Collectors.toList());
 		List<CompilationUnit> asts = files.stream().map(Main::getCompilationUnit).collect(Collectors.toList());
 		IAdapter adapter = new JDTtoRUASTAdapter();
-		// List<IRUAST> adaptedAst = asts.stream().map(ast ->
-		// adapter.adapt(ast)).collect(Collectors.toList());
-		adapter.adapt(asts.get(0));
-		// fusion
-		// Main.playGround();
-
+		List<IRUAST> adaptedAst = asts.stream().map(ast -> adapter.adapt(ast)).collect(Collectors.toList());
+		System.out.println(adaptedAst.get(0));
 	}
 
 	private static void playGround() {

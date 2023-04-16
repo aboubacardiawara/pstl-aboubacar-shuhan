@@ -11,4 +11,5 @@ public interface IRUAST {
     public List<IRUAST> getChildren();
 
     public IRUAST getParent();
+
 }

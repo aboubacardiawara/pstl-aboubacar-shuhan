@@ -43,8 +43,8 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     public IRUAST adapt(CompilationUnit cu) {
         cu.accept(this);
         // System.out.println(groupes);
-        checkRelation();
-        return null;
+        // checkRelation();
+        return groupes.get("class").get(0);
     }
 
     @Override
