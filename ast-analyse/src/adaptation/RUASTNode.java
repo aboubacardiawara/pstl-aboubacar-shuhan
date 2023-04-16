@@ -11,14 +11,15 @@ import adaptation.interfaces.IRUASTNode;
 public class RUASTNode implements IRUASTNode {
 
     protected String name;
+    protected ASTNode jdtnode;
     protected int id;
-    protected Variants variants;
+    protected VariantsSet variants;
     private RUASTNodeType type;
 
-    public RUASTNode(ASTNode root, int nodeId, Integer variant, RUASTNodeType nodeType) {
-        name = getASTNodeName(root);
+    public RUASTNode(ASTNode node, int nodeId, Integer variant, RUASTNodeType nodeType) {
+        jdtnode = node;
         id = nodeId;
-        variants = new Variants();
+        variants = new VariantsSet();
         variants.add(variant);
         type = nodeType;
     }
@@ -34,7 +35,7 @@ public class RUASTNode implements IRUASTNode {
     }
 
     @Override
-    public Variants getVariants() {
+    public VariantsSet getVariants() {
         return variants;
     }
 
@@ -43,34 +44,12 @@ public class RUASTNode implements IRUASTNode {
         return type;
     }
 
-    private String getASTNodeName(ASTNode node) {
-        String name = null;
-        switch (node.getNodeType()) {
-            case ASTNode.PACKAGE_DECLARATION:
-                String packageName = ((PackageDeclaration) node).getName().getFullyQualifiedName();
-                name = packageName;
-                break;
-            case ASTNode.TYPE_DECLARATION:
-                String className = ((TypeDeclaration) node).getName().getIdentifier();
-                name = className;
-                break;
-            case ASTNode.FIELD_DECLARATION:
-                FieldDeclaration fieldDeclaration = (FieldDeclaration) node;
-                String fieldName = fieldDeclaration.fragments().get(0).toString();
-                name = fieldName;
-                break;
-            case ASTNode.METHOD_DECLARATION:
-                String methodName = ((MethodDeclaration) node).getName().getIdentifier();
-                name = methodName;
-                break;
-            default:
-                // handle other node types here
-                break;
-        }
+    public void setName(String newName) {
+        this.name = newName;
+    }
+
+    @Override
+    public String toString() {
         return name;
     }
-
-    public void setName(String className) {
-    }
-
 }

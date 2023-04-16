@@ -14,7 +14,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import adaptation.JDTtoRUASTAdapter ;
+import adaptation.JDTtoRUASTAdapter;
 import adaptation.RUASTNode;
 import adaptation.RUASTTree;
 import adaptation.interfaces.IRUASTNode;
@@ -43,7 +43,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		int fileCount = 8;
+		int fileCount = 4;
 		String rootDirectoryString = "./bank-variants/";
 		// files path
 		List<String> filesPath = new ArrayList<>();
@@ -54,16 +54,22 @@ public class Main {
 			filesPath.add(path);
 		}
 
-		
 		List<File> files = filesPath.stream().map(path -> new File(path)).collect(Collectors.toList());
-		// asts
 		List<CompilationUnit> asts = files.stream().map(Main::getCompilationUnit).collect(Collectors.toList());
-		// adapted ast
 		IAdapter adapter = new JDTtoRUASTAdapter();
-		List<IRUAST> adaptedAst = asts.stream().map(ast -> adapter.adapt(ast)).collect(Collectors.toList());
-		System.out.println(adaptedAst.get(2));
+		// List<IRUAST> adaptedAst = asts.stream().map(ast ->
+		// adapter.adapt(ast)).collect(Collectors.toList());
+		adapter.adapt(asts.get(0));
+		// fusion
+		// Main.playGround();
 
-		
+	}
+
+	private static void playGround() {
+		String I1 = "if (ammount <= balance)";
+		String I2 = "if (ammount <= balance + limit)";
+		String I3 = "if (ammount <=  balance)";
+		System.out.println(I1.equals(I3));
 	}
 
 }

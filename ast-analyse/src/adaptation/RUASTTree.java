@@ -37,4 +37,8 @@ public class RUASTTree implements IRUAST {
         children.add(node);
     }
 
+    @Override
+    public String toString() {
+        return root.toString();
+    }
 }

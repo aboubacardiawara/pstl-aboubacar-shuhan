@@ -5,6 +5,7 @@ import java.util.Set;
 import adaptation.RUASTNodeType;
 
 public interface IRUASTNode {
+
     public String getName();
 
     public int getId();
@@ -14,5 +15,4 @@ public interface IRUASTNode {
     public RUASTNodeType getType();
 
     public void setName(String className);
-       
 }
