@@ -2,6 +2,8 @@ package adaptation.interfaces;
 
 import java.util.Set;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 import adaptation.RUASTNodeType;
 
 public interface IRUASTNode {
@@ -15,4 +17,6 @@ public interface IRUASTNode {
     public RUASTNodeType getType();
 
     public void setName(String className);
+
+    public ASTNode getJdtNode();
 }

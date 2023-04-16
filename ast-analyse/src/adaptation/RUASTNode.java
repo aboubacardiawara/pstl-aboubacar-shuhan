@@ -52,4 +52,9 @@ public class RUASTNode implements IRUASTNode {
     public String toString() {
         return name;
     }
+
+    @Override
+    public ASTNode getJdtNode() {
+        return jdtnode;
+    }
 }

@@ -16,10 +16,15 @@ public class RUASTTree implements IRUAST {
 
     private IRUASTNode root;
     private List<IRUAST> children;
+    private IRUAST parent;
 
-    public RUASTTree(IRUASTNode adaptedRoot, List<IRUAST> adaptedChildren) {
+    public RUASTTree(IRUASTNode adaptedRoot, IRUAST adaptedParent, List<IRUAST> adaptedChildren) {
         root = adaptedRoot;
         children = adaptedChildren;
+        parent = adaptedParent;
+        if (adaptedParent != null) {
+            adaptedParent.addChild(this);
+        }
     }
 
     @Override
@@ -40,5 +45,10 @@ public class RUASTTree implements IRUAST {
     @Override
     public String toString() {
         return root.toString();
+    }
+
+    @Override
+    public IRUAST getParent() {
+        return parent;
     }
 }
