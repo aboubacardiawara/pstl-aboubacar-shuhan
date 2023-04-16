@@ -1,6 +1,5 @@
-package adaptation;
+package main.adaptation;
 
-import java.beans.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +13,9 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import adaptation.interfaces.IAdapter;
-import adaptation.interfaces.IRUASTNode;
-import adaptation.interfaces.IRUAST;
+import main.adaptation.interfaces.IAdapter;
+import main.adaptation.interfaces.IRUASTNode;
+import main.adaptation.interfaces.IRUAST;
 
 /**
  * Le but de cette est d'adapter l'AST de JDT en notre struture

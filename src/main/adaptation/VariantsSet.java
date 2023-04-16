@@ -1,4 +1,4 @@
-package adaptation;
+package main.adaptation;
 
 import java.util.HashSet;
 

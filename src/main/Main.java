@@ -1,27 +1,18 @@
+package main;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.nio.channels.NonWritableChannelException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import adaptation.JDTtoRUASTAdapter;
-import adaptation.RUASTNode;
-import adaptation.RUASTTree;
-import adaptation.interfaces.IRUASTNode;
-import adaptation.interfaces.IAdapter;
-import adaptation.interfaces.IRUAST;
-import fusion.Merger;
-import visitor.Greater;
+import main.adaptation.JDTtoRUASTAdapter;
+import main.adaptation.interfaces.IAdapter;
+import main.adaptation.interfaces.IRUAST;
 
 public class Main {
 
@@ -42,7 +33,10 @@ public class Main {
 		return cu;
 	}
 
-	public static void main(String[] args) {
+	/**
+	 * Fusion des classes `Account` des 4 premières variantes.
+	 */
+	private static void playGroundFusionClassesAccount() {
 		int fileCount = 4;
 		String rootDirectoryString = "./bank-variants/";
 		// files path
@@ -58,14 +52,10 @@ public class Main {
 		List<CompilationUnit> asts = files.stream().map(Main::getCompilationUnit).collect(Collectors.toList());
 		IAdapter adapter = new JDTtoRUASTAdapter();
 		List<IRUAST> adaptedAst = asts.stream().map(ast -> adapter.adapt(ast)).collect(Collectors.toList());
-		System.out.println(adaptedAst.get(0));
 	}
 
-	private static void playGround() {
-		String I1 = "if (ammount <= balance)";
-		String I2 = "if (ammount <= balance + limit)";
-		String I3 = "if (ammount <=  balance)";
-		System.out.println(I1.equals(I3));
+	public static void main(String[] args) {
+		playGroundFusionClassesAccount();
 	}
 
 }

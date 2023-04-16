@@ -1,4 +1,4 @@
-package adaptation;
+package main.adaptation;
 
 /**
  * Les types des noeuds dans notre representation de note AST.

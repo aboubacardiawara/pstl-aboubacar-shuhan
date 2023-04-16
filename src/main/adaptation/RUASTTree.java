@@ -1,11 +1,9 @@
-package adaptation;
+package main.adaptation;
 
 import java.util.List;
 
-import org.eclipse.jdt.core.dom.ASTNode;
-
-import adaptation.interfaces.IRUASTNode;
-import adaptation.interfaces.IRUAST;
+import main.adaptation.interfaces.IRUASTNode;
+import main.adaptation.interfaces.IRUAST;
 
 /**
  * Ceci est une representaiton compacte de l'AST d'un code java.base/

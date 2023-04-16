@@ -1,4 +1,4 @@
-package adaptation.interfaces;
+package main.adaptation.interfaces;
 
 import java.util.List;
 
