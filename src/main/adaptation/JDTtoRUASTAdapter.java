@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import main.adaptation.interfaces.IAdapter;
 import main.adaptation.interfaces.IRUASTNode;
+import main.util.Utile;
 import main.adaptation.interfaces.IRUAST;
 
 /**
@@ -62,7 +63,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         root.setName(node.getName().toString());
         ASTNode classNode = node.getParent();
         IRUAST parent = findThroughClasses(classNode); // cherche dans les classes
-        assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
+        Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
         IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
         insert("method", ruastTree);
         return super.visit(node);
@@ -74,7 +75,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         root.setName(node.toString());
         ASTNode classNode = node.getParent();
         IRUAST parent = findThroughClasses(classNode); // cherche dans les classes
-        assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
+        Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
         IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
         insert("field", ruastTree);
         return super.visit(node);
@@ -89,7 +90,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             }
             IRUAST parent = findThroughMethods(methodNode); // cherche parmi les methodes
             IRUASTNode root = new RUASTNode(node, 0, VARIANT_ID, RUASTNodeType.STATEMENT);
-            assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
+            Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
             IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
             root.setName(statement.toString());
             insert("statement", ruastTree);
@@ -114,10 +115,5 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     private IRUAST findThroughClasses(ASTNode node) {
         return findInGroupes(node, "class");
-    }
-
-    private void assertionCheck(boolean b, String msg) {
-        if (!b)
-            throw new AssertionError(msg);
     }
 }

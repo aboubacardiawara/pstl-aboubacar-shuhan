@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import main.adaptation.JDTtoRUASTAdapter;
 import main.adaptation.interfaces.IAdapter;
 import main.adaptation.interfaces.IRUAST;
+import main.util.Utile;
 
 public class Main {
 

@@ -12,4 +12,8 @@ public interface IRUAST {
 
     public IRUAST getParent();
 
+	public boolean isLeaf();
+
+	public String getName();
+
 }

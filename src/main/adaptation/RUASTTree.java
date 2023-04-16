@@ -50,4 +50,15 @@ public class RUASTTree implements IRUAST {
         return parent;
     }
 
+	@Override
+	public boolean isLeaf() {
+		RUASTNodeType rootType = this.getRoot().getType();
+		return rootType == RUASTNodeType.FIELD | rootType == RUASTNodeType.STATEMENT ;
+	}
+
+	@Override
+	public String getName() {
+		return this.root.getName();
+	}
+
 }
