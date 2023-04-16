@@ -13,7 +13,8 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import main.adaptation.JDTtoRUASTAdapter;
 import main.adaptation.interfaces.IAdapter;
 import main.adaptation.interfaces.IRUAST;
-import main.util.Utile;
+import main.fusion.IMerger;
+import main.fusion.Merger;
 
 public class Main {
 
@@ -35,9 +36,9 @@ public class Main {
 	}
 
 	/**
-	 * Fusion des classes `Account` des 4 premières variantes.
+	 * Adaptation des classes `Account` des 4 premières variantes.
 	 */
-	private static void playGroundFusionClassesAccount() {
+	private static void playGroundAdaptationClassesAccount() {
 		int fileCount = 4;
 		String rootDirectoryString = "./bank-variants/";
 		// files path
@@ -55,8 +56,32 @@ public class Main {
 		List<IRUAST> adaptedAst = asts.stream().map(ast -> adapter.adapt(ast)).collect(Collectors.toList());
 	}
 
+	/**
+	 * Adaptation des classes `Account` des 4 premières variantes.
+	 */
+	private static void playGroundFusionAccount1And2() {
+		int fileCount = 2;
+		String rootDirectoryString = "./bank-variants/";
+		// files path
+		List<String> filesPath = new ArrayList<>();
+		for (int i = 0; i < fileCount; i++) {
+			String variant = "Variant0000" + (i + 1) + "/";
+			String pkg = "bs/";
+			String path = rootDirectoryString + variant + pkg + "Account.java";
+			filesPath.add(path);
+		}
+
+		List<File> files = filesPath.stream().map(path -> new File(path)).collect(Collectors.toList());
+		List<CompilationUnit> asts = files.stream().map(Main::getCompilationUnit).collect(Collectors.toList());
+		IAdapter adapter = new JDTtoRUASTAdapter();
+		List<IRUAST> adaptedAst = asts.stream().map(ast -> adapter.adapt(ast)).collect(Collectors.toList());
+		IMerger merger = new Merger();
+		IRUAST mergedTree = merger.merge(adaptedAst.get(0), adaptedAst.get(1));
+		System.out.println(mergedTree);
+	}
+	
 	public static void main(String[] args) {
-		playGroundFusionClassesAccount();
+		playGroundFusionAccount1And2();
 	}
 
 }

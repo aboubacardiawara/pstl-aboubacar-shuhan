@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import main.adaptation.RUASTNode;
 import main.adaptation.RUASTTree;
 import main.adaptation.interfaces.IRUAST;
 import main.adaptation.interfaces.IRUASTNode;
@@ -42,11 +43,16 @@ public class Merger implements IMerger {
 	 * @return
 	 */
 	private IRUASTNode mergeNode(IRUASTNode root1, IRUASTNode root2) {
-		return root1;
+		IRUASTNode newNode = new RUASTNode(root1.getJdtNode(), 0, null, root1.getType());
+		newNode.setName(root1.getName());
+		return newNode;
 	}
 
 	@Override
-	public List<IRUAST> mergeSequences(List<IRUAST> subTrees1, List<IRUAST> subTrees2) {
+	public List<IRUAST> mergeSequences(List<IRUAST> s1, List<IRUAST> s2) {
+		List<IRUAST> subTrees1 = new ArrayList<>(s1);
+		List<IRUAST> subTrees2 =  new ArrayList<>(s2);
+		
 		Map<String, IRUAST> allTree = new HashMap<>();
 		Set<String> collectedTrees = new HashSet<String>();
 		List<IRUAST> superSequence = new ArrayList<>();
