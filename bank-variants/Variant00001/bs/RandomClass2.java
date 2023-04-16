@@ -1,4 +1,4 @@
-package visitor;
+package bs;
 
 public class RandomClass2 {
 	

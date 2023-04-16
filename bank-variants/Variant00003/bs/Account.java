@@ -1,34 +1,25 @@
 
+package bs;
 
-package bs; 
+public class Account {
 
-public   class  Account {
-	
 	private String id;
 
-	
 	private double balance;
 
-	
+	public Account(String i, double m) {
+		id = i;
+		balance = m;
+	}
 
-   public Account(String i, double m){
-	   
-	   id=i;
-	   balance=m;
-   }
-
-	
 	public void deposit(double amount) {
 		this.balance += amount;
 	}
-
-	
 
 	public double getAmount() {
 		return balance;
 	}
 
-	
 	public void withdraw(double amount) {
 		if (amount <= balance) {
 			balance -= amount;
@@ -37,16 +28,11 @@ public   class  Account {
 		}
 	}
 
-	
-	
 	private int currency;
 
-	
-	
-	public int getCurrency(){
-		
+	public int getCurrency() {
+
 		return currency;
 	}
-
 
 }
