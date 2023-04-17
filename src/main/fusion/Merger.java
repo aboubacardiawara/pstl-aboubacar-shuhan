@@ -9,9 +9,9 @@ import java.util.Set;
 
 import main.adaptation.RUASTNode;
 import main.adaptation.RUASTTree;
-import main.adaptation.VariantsSet;
 import main.adaptation.interfaces.IRUAST;
 import main.adaptation.interfaces.IRUASTNode;
+import main.fusion.interfaces.IMerger;
 import main.util.Utile;
 
 public class Merger implements IMerger {
@@ -36,8 +36,7 @@ public class Merger implements IMerger {
 	}
 
 	/**
-	 * Fusionner deux noeuds reviendrait à fusionner les informations que chacun
-	 * porte. [TODO] Par exemple c'est le lieu d'unir les ensemble de variants.
+	 * Fusionner deux noeuds reviendrait à fusionner leurs informaitons
 	 * 
 	 * @param root1
 	 * @param root2

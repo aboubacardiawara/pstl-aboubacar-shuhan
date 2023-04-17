@@ -1,4 +1,4 @@
-package main.fusion;
+package main.fusion.interfaces;
 
 import java.util.List;
 
