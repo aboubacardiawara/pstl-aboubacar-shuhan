@@ -16,7 +16,7 @@ public class Main {
 
 	private static void lightExample() {
 		List<String> filesPath = new ArrayList<>();
-		for (int i = 1; i <= 4; i++) {
+		for (int i = 1; i <= 9; i++) {
 			String variantPath = "./bank-variants/Variant0000" + (i) + "/";
 			filesPath.add(variantPath);
 		}

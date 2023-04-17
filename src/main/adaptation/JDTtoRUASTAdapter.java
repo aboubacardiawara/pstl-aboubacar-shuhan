@@ -59,7 +59,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     public boolean visit(TypeDeclaration node) {
         VariantsSet variants = new VariantsSet();
         variants.add(variantId);
-        IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.CLASS);
+        IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.TYPE_DEFINITION);
         root.setName(node.getName().toString());
         IRUAST parent = null;
         IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
