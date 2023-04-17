@@ -15,12 +15,13 @@ public interface IRUAST {
 
     public IRUAST getParent();
 
-	public boolean isLeaf();
+    public boolean isLeaf();
 
-	public String getName();
+    public String getName();
 
     public void setParent(RUASTTree tree);
 
     public VariantsSet getVariants();
 
+    public int size();
 }

@@ -53,16 +53,16 @@ public class RUASTTree implements IRUAST {
         return parent;
     }
 
-	@Override
-	public boolean isLeaf() {
-		RUASTNodeType rootType = this.getRoot().getType();
-		return rootType == RUASTNodeType.FIELD | rootType == RUASTNodeType.STATEMENT ;
-	}
+    @Override
+    public boolean isLeaf() {
+        RUASTNodeType rootType = this.getRoot().getType();
+        return rootType == RUASTNodeType.FIELD | rootType == RUASTNodeType.STATEMENT;
+    }
 
-	@Override
-	public String getName() {
-		return this.root.getName();
-	}
+    @Override
+    public String getName() {
+        return this.root.getName();
+    }
 
     @Override
     public void setParent(RUASTTree tree) {
@@ -74,6 +74,21 @@ public class RUASTTree implements IRUAST {
         return this.root.getVariants();
     }
 
-    
+    @Override
+    public int size() {
+        return sizeAux(this);
+    }
+
+    private int sizeAux(RUASTTree ruastTree) {
+        if (ruastTree.isLeaf()) {
+            return 1;
+        }
+        int sizeSubtrees = 0;
+        for (IRUAST subtree : ruastTree.getChildren()) {
+            sizeSubtrees += subtree.size();
+        }
+
+        return 1 + sizeSubtrees;
+    }
 
 }

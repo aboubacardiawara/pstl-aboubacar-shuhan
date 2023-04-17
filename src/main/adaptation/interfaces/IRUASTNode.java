@@ -20,4 +20,9 @@ public interface IRUASTNode {
     public void setName(String className);
 
     public ASTNode getJdtNode();
+
+    public Integer getBlock();
+
+    public void setBlock(Integer id_block);
+
 }

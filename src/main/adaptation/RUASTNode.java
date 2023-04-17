@@ -1,5 +1,8 @@
 package main.adaptation;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import main.adaptation.interfaces.IRUASTNode;
@@ -12,6 +15,7 @@ public class RUASTNode implements IRUASTNode {
     protected int id;
     protected VariantsSet variants;
     private RUASTNodeType type;
+    protected Integer block;
 
     public RUASTNode(ASTNode node, int nodeId, VariantsSet variant, RUASTNodeType nodeType) {
         jdtnode = node;
@@ -19,6 +23,7 @@ public class RUASTNode implements IRUASTNode {
         Utile.assertionCheck(variant != null, "Le variant ne doit pas etre null");
         variants = (VariantsSet) variant.clone();
         type = nodeType;
+        block = null;
     }
 
     @Override
@@ -54,4 +59,15 @@ public class RUASTNode implements IRUASTNode {
     public ASTNode getJdtNode() {
         return jdtnode;
     }
+
+    @Override
+    public Integer getBlock() {
+        return block;
+    }
+
+    @Override
+    public void setBlock(Integer id_block) {
+        this.block = id_block;
+    }
+
 }
