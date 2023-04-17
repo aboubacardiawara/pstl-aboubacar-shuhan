@@ -2,6 +2,7 @@ package main.adaptation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import main.adaptation.interfaces.IRUASTNode;
 import main.adaptation.interfaces.IRUAST;
@@ -70,7 +71,7 @@ public class RUASTTree implements IRUAST {
     }
 
     @Override
-    public VariantsSet getVariants() {
+    public Set<Integer> getVariants() {
         return this.root.getVariants();
     }
 

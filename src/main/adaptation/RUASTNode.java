@@ -13,15 +13,15 @@ public class RUASTNode implements IRUASTNode {
     protected String name;
     protected ASTNode jdtnode;
     protected int id;
-    protected VariantsSet variants;
+    protected Set<Integer> variants;
     private RUASTNodeType type;
     protected Integer block;
 
-    public RUASTNode(ASTNode node, int nodeId, VariantsSet variant, RUASTNodeType nodeType) {
+    public RUASTNode(ASTNode node, int nodeId, Set<Integer> variant, RUASTNodeType nodeType) {
         jdtnode = node;
         id = nodeId;
         Utile.assertionCheck(variant != null, "Le variant ne doit pas etre null");
-        variants = (VariantsSet) variant.clone();
+        variants = new HashSet<>(variant);
         type = nodeType;
         block = null;
     }
@@ -37,7 +37,7 @@ public class RUASTNode implements IRUASTNode {
     }
 
     @Override
-    public VariantsSet getVariants() {
+    public Set<Integer> getVariants() {
         return variants;
     }
 

@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.AST;
@@ -57,7 +59,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(TypeDeclaration node) {
-        VariantsSet variants = new VariantsSet();
+        Set<Integer> variants = new HashSet<>();
         variants.add(variantId);
         IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.TYPE_DEFINITION);
         root.setName(node.getName().toString());
@@ -69,7 +71,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(MethodDeclaration node) {
-        VariantsSet variants = new VariantsSet();
+        Set<Integer> variants = new HashSet<>();
         variants.add(variantId);
         IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.METHOD);
         root.setName(node.getName().toString());
@@ -83,7 +85,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(FieldDeclaration node) {
-        VariantsSet variants = new VariantsSet();
+        Set<Integer> variants = new HashSet<>();
         variants.add(variantId);
         IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.FIELD);
         root.setName(node.toString());
@@ -104,7 +106,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             }
             IRUAST parent = findThroughMethods(methodNode); // cherche parmi les methodes
 
-            VariantsSet variants = new VariantsSet();
+            Set<Integer> variants = new HashSet<>();
             variants.add(variantId);
             IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.STATEMENT);
             Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
@@ -142,7 +144,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             return this.adapt(cu);
         }).collect(Collectors.toList());
         // la racine est un noeud de type VARIANT
-        VariantsSet variants = new VariantsSet();
+        Set<Integer> variants = new HashSet<>();
         variants.add(variantId);
         IRUASTNode variantRoot = new RUASTNode(null, 0, variants, RUASTNodeType.VARIANT);
         variantRoot.setName("variant");

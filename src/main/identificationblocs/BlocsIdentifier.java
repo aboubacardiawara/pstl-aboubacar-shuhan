@@ -2,10 +2,9 @@ package main.identificationblocs;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-import main.adaptation.VariantsSet;
 import main.adaptation.interfaces.IRUAST;
-import main.adaptation.interfaces.IRUASTNode;
 
 public class BlocsIdentifier {
 
@@ -75,14 +74,14 @@ public class BlocsIdentifier {
     }
 
     public IRUAST findBlocs(IRUAST ruast) {
-        Map<VariantsSet, Integer> env = new HashMap<>();
+        Map<Set<Integer>, Integer> env = new HashMap<>();
         findBlocsAux(ruast, env);
         System.out.println("blocs: " + env);
         return ruast;
     }
 
-    private void findBlocsAux(IRUAST ruast, Map<VariantsSet, Integer> env) {
-        VariantsSet currenctVariant = ruast.getVariants();
+    private void findBlocsAux(IRUAST ruast, Map<Set<Integer>, Integer> env) {
+        Set<Integer> currenctVariant = ruast.getVariants();
         if (!env.containsKey(currenctVariant)) {
             env.put(currenctVariant, getNextIdForBloc());
         }
@@ -92,4 +91,5 @@ public class BlocsIdentifier {
             findBlocsAux(child, env);
         }
     }
+
 }
