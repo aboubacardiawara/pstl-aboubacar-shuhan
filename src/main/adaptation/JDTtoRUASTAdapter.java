@@ -28,8 +28,12 @@ import main.adaptation.interfaces.IRUAST;
  * Cela nous permettra en effet de fusionner facilement les arbres.
  */
 public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
-    static Integer VARIANT_ID = 0;
     private Map<String, List<IRUAST>> groupes;
+    private int variantId;
+
+    public JDTtoRUASTAdapter(int variant) {
+        this.variantId = variant;
+    }
 
     public void insert(String groupe, IRUAST tree) {
         // si le groupe n'existe pas, initialiser à liste vide
@@ -48,14 +52,12 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     public IRUAST adapt(CompilationUnit cu) {
     	groupes = new HashMap<>();
         cu.accept(this);
-        // System.out.println(groupes);
-        // checkRelation();
         return groupes.get("class").get(0);
     }
 
     @Override
     public boolean visit(TypeDeclaration node) {
-        IRUASTNode root = new RUASTNode(node, 0, VARIANT_ID, RUASTNodeType.CLASS);
+        IRUASTNode root = new RUASTNode(node, 0, variantId, RUASTNodeType.CLASS);
         root.setName(node.getName().toString());
         IRUAST parent = null;
         IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
@@ -65,7 +67,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(MethodDeclaration node) {
-        IRUASTNode root = new RUASTNode(node, 0, VARIANT_ID, RUASTNodeType.METHOD);
+        IRUASTNode root = new RUASTNode(node, 0, variantId, RUASTNodeType.METHOD);
         root.setName(node.getName().toString());
         ASTNode classNode = node.getParent();
         IRUAST parent = findThroughClasses(classNode); // cherche dans les classes
@@ -77,7 +79,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(FieldDeclaration node) {
-        IRUASTNode root = new RUASTNode(node, 0, VARIANT_ID, RUASTNodeType.FIELD);
+        IRUASTNode root = new RUASTNode(node, 0, variantId, RUASTNodeType.FIELD);
         root.setName(node.toString());
         ASTNode classNode = node.getParent();
         IRUAST parent = findThroughClasses(classNode); // cherche dans les classes
@@ -95,7 +97,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
                 continue;
             }
             IRUAST parent = findThroughMethods(methodNode); // cherche parmi les methodes
-            IRUASTNode root = new RUASTNode(node, 0, VARIANT_ID, RUASTNodeType.STATEMENT);
+            IRUASTNode root = new RUASTNode(node, 0, variantId, RUASTNodeType.STATEMENT);
             Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
             IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
             root.setName(statement.toString());
@@ -128,17 +130,15 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         List<File> files = getAllJavaFiles(variantPath);
         List<IRUAST> classesRuast = files.stream().map(e -> {
 			CompilationUnit cu = getCompilationUnit(e);
-			IAdapter adapter = new JDTtoRUASTAdapter();
-			return adapter.adapt(cu);
+			return this.adapt(cu);
 		}).collect(Collectors.toList());
 
         // on cree la racine du variant
         // c'est un noeud de type variant
-        IRUASTNode variantRoot = new RUASTNode(null, 0, VARIANT_ID, RUASTNodeType.VARIANT);
+        IRUASTNode variantRoot = new RUASTNode(null, 0, variantId, RUASTNodeType.VARIANT);
         variantRoot.setName("variant");
         // toutes les classes sont les enfants de la racine        
         IRUAST ruast = new RUASTTree(variantRoot, null, classesRuast);
-
         return ruast;
     }
 

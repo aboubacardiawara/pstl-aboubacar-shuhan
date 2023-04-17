@@ -3,6 +3,7 @@ package main.adaptation.interfaces;
 import java.util.List;
 
 import main.adaptation.RUASTTree;
+import main.adaptation.VariantsSet;
 
 public interface IRUAST {
 
@@ -19,5 +20,9 @@ public interface IRUAST {
 	public String getName();
 
     public void setParent(RUASTTree tree);
+
+    public void setVariants(VariantsSet variants);
+
+    public VariantsSet getVariants();
 
 }

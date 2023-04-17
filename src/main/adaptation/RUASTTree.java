@@ -16,6 +16,7 @@ public class RUASTTree implements IRUAST {
     private IRUASTNode root;
     private List<IRUAST> children;
     private IRUAST parent;
+    private VariantsSet variants;
 
     public RUASTTree(IRUASTNode adaptedRoot, IRUAST adaptedParent, List<IRUAST> adaptedChildren) {
         root = adaptedRoot;
@@ -67,6 +68,16 @@ public class RUASTTree implements IRUAST {
     @Override
     public void setParent(RUASTTree tree) {
         this.parent = tree;
+    }
+
+    @Override
+    public void setVariants(VariantsSet variants) {
+        this.variants = variants;
+    }
+
+    @Override
+    public VariantsSet getVariants() {
+        return this.variants;
     }
 
     
