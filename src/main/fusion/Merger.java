@@ -29,7 +29,7 @@ public class Merger implements IMerger {
 		}
 
 		IRUASTNode root = mergeNode(root1, root2);
-		IRUAST parent = a1.getParent();
+		IRUAST parent =  a1.getParent();
 		IRUAST mergedTree = new RUASTTree(root, parent, subTrees);
 		return mergedTree;
 	}
@@ -63,7 +63,7 @@ public class Merger implements IMerger {
 		}
 
 		// ajout des arbres de la seconde sequence, si collision, fusionner.
-		for (IRUAST tree : subTrees1) {
+		for (IRUAST tree : subTrees2) {
 			if (allTree.containsKey(tree.getName())) {
 				IRUAST mergedTree = merge(allTree.get(tree.getName()), tree);
 				allTree.put(tree.getName(), mergedTree);
@@ -82,6 +82,8 @@ public class Merger implements IMerger {
 		for (IRUAST tree : subTrees2) {
 			if (!collectedTrees.contains(tree.getName())) {
 				superSequence.add(tree);
+			} else {
+				collectedTrees.add(tree.getName());
 			}
 		}
 		return superSequence;

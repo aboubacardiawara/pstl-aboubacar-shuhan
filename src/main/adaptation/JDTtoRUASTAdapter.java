@@ -1,11 +1,16 @@
 package main.adaptation;
 
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -24,7 +29,7 @@ import main.adaptation.interfaces.IRUAST;
  */
 public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     static Integer VARIANT_ID = 0;
-    private Map<String, List<IRUAST>> groupes = new HashMap<>();
+    private Map<String, List<IRUAST>> groupes;
 
     public void insert(String groupe, IRUAST tree) {
         // si le groupe n'existe pas, initialiser à liste vide
@@ -41,6 +46,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     }
 
     public IRUAST adapt(CompilationUnit cu) {
+    	groupes = new HashMap<>();
         cu.accept(this);
         // System.out.println(groupes);
         // checkRelation();
@@ -115,5 +121,61 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     private IRUAST findThroughClasses(ASTNode node) {
         return findInGroupes(node, "class");
+    }
+
+    @Override
+    public IRUAST adapt(String variantPath) {
+        List<File> files = getAllJavaFiles(variantPath);
+        List<IRUAST> classesRuast = files.stream().map(e -> {
+			CompilationUnit cu = getCompilationUnit(e);
+			IAdapter adapter = new JDTtoRUASTAdapter();
+			return adapter.adapt(cu);
+		}).collect(Collectors.toList());
+
+        // on cree la racine du variant
+        // c'est un noeud de type variant
+        IRUASTNode variantRoot = new RUASTNode(null, 0, VARIANT_ID, RUASTNodeType.VARIANT);
+        variantRoot.setName("variant");
+        // toutes les classes sont les enfants de la racine        
+        IRUAST ruast = new RUASTTree(variantRoot, null, classesRuast);
+
+        return ruast;
+    }
+
+    private CompilationUnit getCompilationUnit(File file) {
+		char[] source = null;
+		try {
+			FileReader reader = new FileReader(file);
+			source = new char[(int) file.length()];
+			reader.read(source);
+			reader.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setSource(source);
+		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+		return cu;
+	}
+
+	private List<File> getAllJavaFiles(String variantPath) {
+        return getAllJavaFilesAux(new File(variantPath));
+    }
+
+    private List<File> getAllJavaFilesAux(File f) {
+        List<File> files = new ArrayList<>();
+		File[] list = f.listFiles();
+		if (list == null) return files;
+		for (File file : list) {
+			if (file.isDirectory()) {
+				files.addAll(getAllJavaFilesAux(file));
+			} else {
+				if (file.getName().endsWith(".java")) {
+					files.add(file);
+				}
+			}
+		}
+		return files;
     }
 }

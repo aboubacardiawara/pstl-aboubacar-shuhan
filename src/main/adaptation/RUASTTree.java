@@ -1,5 +1,6 @@
 package main.adaptation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import main.adaptation.interfaces.IRUASTNode;
@@ -18,7 +19,8 @@ public class RUASTTree implements IRUAST {
 
     public RUASTTree(IRUASTNode adaptedRoot, IRUAST adaptedParent, List<IRUAST> adaptedChildren) {
         root = adaptedRoot;
-        children = adaptedChildren;
+        children = new ArrayList<>();
+        adaptedChildren.stream().forEach(child -> addChild(child));
         parent = adaptedParent;
         if (adaptedParent != null) {
             adaptedParent.addChild(this);
@@ -36,8 +38,9 @@ public class RUASTTree implements IRUAST {
     }
 
     @Override
-    public void addChild(IRUAST node) {
-        children.add(node);
+    public void addChild(IRUAST tree) {
+        children.add(tree);
+        tree.setParent(this);
     }
 
     @Override
@@ -60,5 +63,12 @@ public class RUASTTree implements IRUAST {
 	public String getName() {
 		return this.root.getName();
 	}
+
+    @Override
+    public void setParent(RUASTTree tree) {
+        this.parent = tree;
+    }
+
+    
 
 }
