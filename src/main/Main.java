@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -150,22 +151,24 @@ public class Main {
 	}
 
 	private static void lightExample() {
-		String pathProduit1 = "./bank-variants/Variant00001/";
-		String pathProduit2 = "./bank-variants/Variant00002/";
-		String pathProduit3 = "./bank-variants/Variant00003/";
-		String pathProduit4 = "./bank-variants/Variant00004/";
+		
+		List<String> filesPath = new ArrayList<>();
+		for (int i = 1; i <= 4; i++) {
+			String variantPath = "./bank-variants/Variant0000" + (i) + "/";
+			filesPath.add(variantPath);
+		}
 
-		IRUAST ruast1 = new JDTtoRUASTAdapter().adapt(pathProduit1);
-		IRUAST ruast2 = new JDTtoRUASTAdapter().adapt(pathProduit2);
-		IRUAST ruast3 = new JDTtoRUASTAdapter().adapt(pathProduit3);
-		IRUAST ruast4 = new JDTtoRUASTAdapter().adapt(pathProduit4);
+		List<IRUAST> ruasts = 
+		filesPath.stream()
+		.map(path -> new JDTtoRUASTAdapter().adapt(path))
+		.collect(Collectors.toList());
 
-		IMerger merger = new Merger();
-		IRUAST mergedTree12 = merger.merge(ruast1, ruast2);
-		IRUAST mergedTree123 = merger.merge(mergedTree12, ruast3);
-		IRUAST mergedTree1234 = merger.merge(mergedTree123, ruast4);
+		IRUAST mergedTree = ruasts.stream().reduce(
+			ruasts.get(0),
+			(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2)
+		);
 
-		System.out.println(mergedTree1234.getChildren().get(0).getChildren().size());
+		System.out.println(mergedTree.getChildren().get(0).getChildren().size());
 	}
 	public static void main(String[] args) {
 		lightExample();
