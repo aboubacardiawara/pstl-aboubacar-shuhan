@@ -9,6 +9,7 @@ import java.util.Set;
 
 import main.adaptation.RUASTNode;
 import main.adaptation.RUASTTree;
+import main.adaptation.VariantsSet;
 import main.adaptation.interfaces.IRUAST;
 import main.adaptation.interfaces.IRUASTNode;
 import main.util.Utile;
@@ -29,21 +30,22 @@ public class Merger implements IMerger {
 		}
 
 		IRUASTNode root = mergeNode(root1, root2);
-		IRUAST parent =  a1.getParent();
+		IRUAST parent = a1.getParent();
 		IRUAST mergedTree = new RUASTTree(root, parent, subTrees);
 		return mergedTree;
 	}
 
 	/**
 	 * Fusionner deux noeuds reviendrait à fusionner les informations que chacun
-	 * porte. [TODO] Par exemple c'est le lieu d'unir les ensemble de variant.
+	 * porte. [TODO] Par exemple c'est le lieu d'unir les ensemble de variants.
 	 * 
 	 * @param root1
 	 * @param root2
 	 * @return
 	 */
 	private IRUASTNode mergeNode(IRUASTNode root1, IRUASTNode root2) {
-		IRUASTNode newNode = new RUASTNode(root1.getJdtNode(), 0, null, root1.getType());
+		root1.getVariants().addAll(root2.getVariants());
+		IRUASTNode newNode = new RUASTNode(root1.getJdtNode(), 0, root1.getVariants(), root1.getType());
 		newNode.setName(root1.getName());
 		return newNode;
 	}
@@ -51,8 +53,8 @@ public class Merger implements IMerger {
 	@Override
 	public List<IRUAST> mergeSequences(List<IRUAST> s1, List<IRUAST> s2) {
 		List<IRUAST> subTrees1 = new ArrayList<>(s1);
-		List<IRUAST> subTrees2 =  new ArrayList<>(s2);
-		
+		List<IRUAST> subTrees2 = new ArrayList<>(s2);
+
 		Map<String, IRUAST> allTree = new HashMap<>();
 		Set<String> collectedTrees = new HashSet<String>();
 		List<IRUAST> superSequence = new ArrayList<>();

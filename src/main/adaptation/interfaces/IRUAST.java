@@ -21,8 +21,6 @@ public interface IRUAST {
 
     public void setParent(RUASTTree tree);
 
-    public void setVariants(VariantsSet variants);
-
     public VariantsSet getVariants();
 
 }

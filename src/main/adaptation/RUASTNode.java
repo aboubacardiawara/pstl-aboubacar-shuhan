@@ -3,6 +3,7 @@ package main.adaptation;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import main.adaptation.interfaces.IRUASTNode;
+import main.util.Utile;
 
 public class RUASTNode implements IRUASTNode {
 
@@ -12,11 +13,11 @@ public class RUASTNode implements IRUASTNode {
     protected VariantsSet variants;
     private RUASTNodeType type;
 
-    public RUASTNode(ASTNode node, int nodeId, Integer variant, RUASTNodeType nodeType) {
+    public RUASTNode(ASTNode node, int nodeId, VariantsSet variant, RUASTNodeType nodeType) {
         jdtnode = node;
         id = nodeId;
-        variants = new VariantsSet();
-        variants.add(variant);
+        Utile.assertionCheck(variant != null, "Le variant ne doit pas etre null");
+        variants = (VariantsSet) variant.clone();
         type = nodeType;
     }
 

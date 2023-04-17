@@ -5,6 +5,7 @@ import java.util.Set;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import main.adaptation.RUASTNodeType;
+import main.adaptation.VariantsSet;
 
 public interface IRUASTNode {
 
@@ -12,7 +13,7 @@ public interface IRUASTNode {
 
     public int getId();
 
-    public Set<Integer> getVariants();
+    public VariantsSet getVariants();
 
     public RUASTNodeType getType();
 

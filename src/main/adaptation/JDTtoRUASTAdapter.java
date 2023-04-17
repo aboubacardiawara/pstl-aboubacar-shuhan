@@ -50,14 +50,16 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     }
 
     public IRUAST adapt(CompilationUnit cu) {
-    	groupes = new HashMap<>();
+        groupes = new HashMap<>();
         cu.accept(this);
         return groupes.get("class").get(0);
     }
 
     @Override
     public boolean visit(TypeDeclaration node) {
-        IRUASTNode root = new RUASTNode(node, 0, variantId, RUASTNodeType.CLASS);
+        VariantsSet variants = new VariantsSet();
+        variants.add(variantId);
+        IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.CLASS);
         root.setName(node.getName().toString());
         IRUAST parent = null;
         IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
@@ -67,7 +69,9 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(MethodDeclaration node) {
-        IRUASTNode root = new RUASTNode(node, 0, variantId, RUASTNodeType.METHOD);
+        VariantsSet variants = new VariantsSet();
+        variants.add(variantId);
+        IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.METHOD);
         root.setName(node.getName().toString());
         ASTNode classNode = node.getParent();
         IRUAST parent = findThroughClasses(classNode); // cherche dans les classes
@@ -79,7 +83,9 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(FieldDeclaration node) {
-        IRUASTNode root = new RUASTNode(node, 0, variantId, RUASTNodeType.FIELD);
+        VariantsSet variants = new VariantsSet();
+        variants.add(variantId);
+        IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.FIELD);
         root.setName(node.toString());
         ASTNode classNode = node.getParent();
         IRUAST parent = findThroughClasses(classNode); // cherche dans les classes
@@ -97,7 +103,10 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
                 continue;
             }
             IRUAST parent = findThroughMethods(methodNode); // cherche parmi les methodes
-            IRUASTNode root = new RUASTNode(node, 0, variantId, RUASTNodeType.STATEMENT);
+
+            VariantsSet variants = new VariantsSet();
+            variants.add(variantId);
+            IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.STATEMENT);
             Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
             IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
             root.setName(statement.toString());
@@ -129,53 +138,54 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     public IRUAST adapt(String variantPath) {
         List<File> files = getAllJavaFiles(variantPath);
         List<IRUAST> classesRuast = files.stream().map(e -> {
-			CompilationUnit cu = getCompilationUnit(e);
-			return this.adapt(cu);
-		}).collect(Collectors.toList());
-
-        // on cree la racine du variant
-        // c'est un noeud de type variant
-        IRUASTNode variantRoot = new RUASTNode(null, 0, variantId, RUASTNodeType.VARIANT);
+            CompilationUnit cu = getCompilationUnit(e);
+            return this.adapt(cu);
+        }).collect(Collectors.toList());
+        // la racine est un noeud de type VARIANT
+        VariantsSet variants = new VariantsSet();
+        variants.add(variantId);
+        IRUASTNode variantRoot = new RUASTNode(null, 0, variants, RUASTNodeType.VARIANT);
         variantRoot.setName("variant");
-        // toutes les classes sont les enfants de la racine        
+        // toutes les classes sont les enfants de la racine
         IRUAST ruast = new RUASTTree(variantRoot, null, classesRuast);
         return ruast;
     }
 
     private CompilationUnit getCompilationUnit(File file) {
-		char[] source = null;
-		try {
-			FileReader reader = new FileReader(file);
-			source = new char[(int) file.length()];
-			reader.read(source);
-			reader.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        char[] source = null;
+        try {
+            FileReader reader = new FileReader(file);
+            source = new char[(int) file.length()];
+            reader.read(source);
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setSource(source);
-		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-		return cu;
-	}
+        ASTParser parser = ASTParser.newParser(AST.JLS3);
+        parser.setSource(source);
+        CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+        return cu;
+    }
 
-	private List<File> getAllJavaFiles(String variantPath) {
+    private List<File> getAllJavaFiles(String variantPath) {
         return getAllJavaFilesAux(new File(variantPath));
     }
 
     private List<File> getAllJavaFilesAux(File f) {
         List<File> files = new ArrayList<>();
-		File[] list = f.listFiles();
-		if (list == null) return files;
-		for (File file : list) {
-			if (file.isDirectory()) {
-				files.addAll(getAllJavaFilesAux(file));
-			} else {
-				if (file.getName().endsWith(".java")) {
-					files.add(file);
-				}
-			}
-		}
-		return files;
+        File[] list = f.listFiles();
+        if (list == null)
+            return files;
+        for (File file : list) {
+            if (file.isDirectory()) {
+                files.addAll(getAllJavaFilesAux(file));
+            } else {
+                if (file.getName().endsWith(".java")) {
+                    files.add(file);
+                }
+            }
+        }
+        return files;
     }
 }
