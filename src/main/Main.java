@@ -1,8 +1,11 @@
 package main;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import main.adaptation.JDTtoRUASTAdapter;
 import main.adaptation.interfaces.IRUAST;
@@ -60,7 +63,10 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
+		long startTime = System.currentTimeMillis();
 		lightExample();
+		long endTime = System.currentTimeMillis();
+		System.out.println("Duration: " + (endTime-startTime) +" (ms)");
 	}
 
 }

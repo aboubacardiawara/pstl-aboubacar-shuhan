@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -57,10 +58,9 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     public IRUAST adapt(CompilationUnit cu) {
         groupes = new HashMap<>();
         cu.accept(this);
-        if (groupes.get("class") == null) {
-           Utile.debug_print("==> null");
-           Utile.debug_print("groupes[" + variantId + "]: " + groupes.get("class"));
-           Utile.DEBUG_ON = true;
+        if (groupes.get("class") == null || groupes.get("class").isEmpty()) {
+            Utile.DEBUG_ON = true;
+           Utile.debug_print("groupes[" + variantId + "]: " + groupes);
            Utile.debug_print(currentFile);
         }
         cu.accept(this);
@@ -173,11 +173,14 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     @Override
     public IRUAST adapt(String variantPath) {
         List<File> files = getAllJavaFiles(variantPath);
-        List<IRUAST> classesRuast = files.stream().map(e -> {
+        Stream<File> stream = files.stream();
+        List<IRUAST> classesRuast = stream.map(e -> {
             CompilationUnit cu = getCompilationUnit(e);
             currentFile = e;
             return this.adapt(cu);
         }).collect(Collectors.toList());
+
+
         // la racine est un noeud de type VARIANT
         Set<Integer> variants = new HashSet<>();
         variants.add(variantId);
