@@ -2,6 +2,7 @@ package main.adaptation;
 
 import java.io.File;
 import java.io.FileReader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +20,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.osgi.framework.debug.Debug;
 
 import main.adaptation.interfaces.IAdapter;
 import main.adaptation.interfaces.IRUASTNode;
@@ -32,6 +34,7 @@ import main.adaptation.interfaces.IRUAST;
 public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     private Map<String, List<IRUAST>> groupes;
     private int variantId;
+    private File currentFile;
 
     public JDTtoRUASTAdapter(int variant) {
         this.variantId = variant;
@@ -48,22 +51,25 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     public void checkRelation() {
         IRUAST method = groupes.get("class").get(0);
-        System.out.println("method " + method + ": " + method.getChildren());
+       Utile.debug_print("method " + method + ": " + method.getChildren());
     }
 
     public IRUAST adapt(CompilationUnit cu) {
         groupes = new HashMap<>();
         cu.accept(this);
         if (groupes.get("class") == null) {
-            System.out.println("==> null");
-            System.out.println("groupes[" + variantId + "]: " + groupes.get("class"));
-            System.out.println(cu.getAST());
+           Utile.debug_print("==> null");
+           Utile.debug_print("groupes[" + variantId + "]: " + groupes.get("class"));
+           Utile.DEBUG_ON = true;
+           Utile.debug_print(currentFile);
         }
+        cu.accept(this);
         return groupes.get("class").get(0);
     }
 
     @Override
     public boolean visit(TypeDeclaration node) {
+        Utile.debug_print("Type: " + node);
         Set<Integer> variants = new HashSet<>();
         variants.add(variantId);
         IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.TYPE_DEFINITION);
@@ -76,7 +82,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(MethodDeclaration node) {
-        if (methodIsInStatement(node)) {
+        if (methodShouldBeSkipped(node)) {
             return super.visit(node);
         }
         Set<Integer> variants = new HashSet<>();
@@ -85,6 +91,9 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         root.setName(node.getName().toString());
         ASTNode classNode = node.getParent();
         IRUAST parent = findThroughClasses(classNode); // cherche dans les classes
+        if (parent == null) {
+           Utile.debug_print(groupes);
+        }
         Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
         IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
         insert("method", ruastTree);
@@ -93,12 +102,19 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(FieldDeclaration node) {
+        if (fieldShouldBeSkipped(node)) {
+            return super.visit(node);
+        }
         Set<Integer> variants = new HashSet<>();
         variants.add(variantId);
         IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.FIELD);
         root.setName(node.toString());
         ASTNode classNode = node.getParent();
-        IRUAST parent = findThroughClasses(classNode); // cherche dans les classes
+        IRUAST parent = findThroughClasses(classNode);
+        if (parent == null) {
+            Utile.debug_print(node);
+            Utile.debug_print(node.getParent());
+        }
         Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
         IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
         insert("field", ruastTree);
@@ -107,10 +123,13 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(Block node) {
-        if (blocIsInStatement(node)) {
+        if ( blocShouldBeSkipped(node)) {
             return super.visit(node);
         }
+
         ASTNode methodNode = node.getParent();
+        // on ignore le cas du corps d'une classe.
+        // C'est le corps des methodes qui nous interesse (Statements).
         if (methodNode.getNodeType() != ASTNode.METHOD_DECLARATION) {
             return super.visit(node);
         }
@@ -121,9 +140,8 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             variants.add(variantId);
             IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.STATEMENT);
             if (parent == null) {
-                // System.out.println(groupes);
-                System.out.println(node);
-                System.out.println(node.getParent());
+                Utile.debug_print(node);
+                Utile.debug_print(node.getParent());
             }
             Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
             IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
@@ -157,6 +175,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         List<File> files = getAllJavaFiles(variantPath);
         List<IRUAST> classesRuast = files.stream().map(e -> {
             CompilationUnit cu = getCompilationUnit(e);
+            currentFile = e;
             return this.adapt(cu);
         }).collect(Collectors.toList());
         // la racine est un noeud de type VARIANT
@@ -207,6 +226,34 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         return files;
     }
 
+
+    /* Cas vicieux */
+
+    /**
+     * Verifie si le noeud est dans une classe anonyme ou pas.
+     * - cas1: Si une methode est dans une classe anonyme, elle correspond à
+     * une instruction et nous faisons abstraction des instructions pour le moment.
+     * - cas 2: Si c'est un bloc d'instruction, c'est pareil, inutile de chercher la methode
+     * parent parceque celle ci ne sera pas collecter dans groupes.
+     * 
+     * @param node
+     * @return
+     */
+    private boolean nodeIsInAnonymousClass(ASTNode node) {
+        ASTNode parent = node.getParent();
+        while (parent != null) {
+            if (parent.getNodeType() == ASTNode.ANONYMOUS_CLASS_DECLARATION) {
+                return true;
+            }
+            parent = parent.getParent();
+        }
+        return false;
+    }
+
+    private boolean methodShouldBeSkipped(MethodDeclaration node) {
+        return methodIsInStatement(node) || nodeIsInAnonymousClass(node);
+    }
+
     private boolean methodIsInStatement(MethodDeclaration node) {
         ASTNode parent = node.getParent();
         while (parent != null) {
@@ -219,7 +266,16 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     }
 
-    private boolean blocIsInStatement(Block node) {
+
+    private boolean blocShouldBeSkipped(Block node) {
+        return nodeIsInStatement(node) || nodeIsInAnonymousClass(node);
+    }
+
+    private boolean fieldShouldBeSkipped(FieldDeclaration node) {
+        return nodeIsInAnonymousClass(node);
+    }
+
+    private boolean nodeIsInStatement(ASTNode node) {
         ASTNode parent = node.getParent();
         while (parent != null) {
             if (parent.getNodeType() == ASTNode.BLOCK) {
@@ -228,6 +284,5 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             parent = parent.getParent();
         }
         return false;
-
     }
 }
