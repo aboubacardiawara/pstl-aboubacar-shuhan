@@ -34,6 +34,9 @@ public class Main {
 		filesPath.add(notePad + "/Notepad-Find");
 		filesPath.add(notePad + "/Notepad-Full");
 		filesPath.add(notePad + "/Notepad-Cut");
+		filesPath.add(notePad + "/Notepad-Copy");
+		filesPath.add(notePad + "/Notepad-Cut-Find");
+		filesPath.add(notePad + "/Notepad-Undo-Redo");
 
 		return filesPath;
 	}
