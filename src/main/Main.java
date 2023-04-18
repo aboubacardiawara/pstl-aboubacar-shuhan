@@ -13,7 +13,7 @@ public class Main {
 	private static int VARIANT_ID = 1;
 
 	private static void lightExample() {
-		List<String> filesPath = notepad();
+		List<String> filesPath = argouml();
 
 		List<IRUAST> ruasts = filesPath.stream()
 				.map(path -> new JDTtoRUASTAdapter(VARIANT_ID++).adapt(path))
@@ -38,6 +38,15 @@ public class Main {
 		filesPath.add(notePad + "/Notepad-Cut-Find");
 		filesPath.add(notePad + "/Notepad-Undo-Redo");
 
+		return filesPath;
+	}
+
+	private static List<String> argouml() {
+		List<String> filesPath = new ArrayList<>();
+		for (int i = 1; i <= 2; i++) {
+			String variantPath = "D:/cours/sorbonne/master/m1/s6/pstl/argouml/argouml/Variant000" + (i) + "/";
+			filesPath.add(variantPath);
+		}
 		return filesPath;
 	}
 
