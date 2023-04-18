@@ -54,6 +54,11 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     public IRUAST adapt(CompilationUnit cu) {
         groupes = new HashMap<>();
         cu.accept(this);
+        if (groupes.get("class") == null) {
+            System.out.println("==> null");
+            System.out.println("groupes[" + variantId + "]: " + groupes.get("class"));
+            System.out.println(cu.getAST());
+        }
         return groupes.get("class").get(0);
     }
 
@@ -71,6 +76,9 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(MethodDeclaration node) {
+        if (methodIsInStatement(node)) {
+            return super.visit(node);
+        }
         Set<Integer> variants = new HashSet<>();
         variants.add(variantId);
         IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.METHOD);
@@ -99,16 +107,24 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     @Override
     public boolean visit(Block node) {
+        if (blocIsInStatement(node)) {
+            return super.visit(node);
+        }
+        ASTNode methodNode = node.getParent();
+        if (methodNode.getNodeType() != ASTNode.METHOD_DECLARATION) {
+            return super.visit(node);
+        }
         for (Object statement : node.statements()) {
-            ASTNode methodNode = node.getParent();
-            if (methodNode.getNodeType() != ASTNode.METHOD_DECLARATION) {
-                continue;
-            }
             IRUAST parent = findThroughMethods(methodNode); // cherche parmi les methodes
 
             Set<Integer> variants = new HashSet<>();
             variants.add(variantId);
             IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.STATEMENT);
+            if (parent == null) {
+                // System.out.println(groupes);
+                System.out.println(node);
+                System.out.println(node.getParent());
+            }
             Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
             IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
             root.setName(statement.toString());
@@ -189,5 +205,29 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             }
         }
         return files;
+    }
+
+    private boolean methodIsInStatement(MethodDeclaration node) {
+        ASTNode parent = node.getParent();
+        while (parent != null) {
+            if (parent.getNodeType() == ASTNode.METHOD_DECLARATION) {
+                return true;
+            }
+            parent = parent.getParent();
+        }
+        return false;
+
+    }
+
+    private boolean blocIsInStatement(Block node) {
+        ASTNode parent = node.getParent();
+        while (parent != null) {
+            if (parent.getNodeType() == ASTNode.BLOCK) {
+                return true;
+            }
+            parent = parent.getParent();
+        }
+        return false;
+
     }
 }

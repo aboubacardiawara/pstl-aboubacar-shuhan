@@ -13,11 +13,7 @@ public class Main {
 	private static int VARIANT_ID = 1;
 
 	private static void lightExample() {
-		List<String> filesPath = new ArrayList<>();
-		for (int i = 1; i <= 8; i++) {
-			String variantPath = "./bank-variants/Variant0000" + (i) + "/";
-			filesPath.add(variantPath);
-		}
+		List<String> filesPath = notepad();
 
 		List<IRUAST> ruasts = filesPath.stream()
 				.map(path -> new JDTtoRUASTAdapter(VARIANT_ID++).adapt(path))
@@ -30,6 +26,25 @@ public class Main {
 		new BlocsIdentifier().findBlocs(mergedTree);
 
 		System.out.println("taille: " + mergedTree.size());
+	}
+
+	private static List<String> notepad() {
+		String notePad = "C:/Users/aboub_bmdb7gr/Downloads/Variant-Notepad";
+		List<String> filesPath = new ArrayList<>();
+		filesPath.add(notePad + "/Notepad-Find");
+		filesPath.add(notePad + "/Notepad-Full");
+		filesPath.add(notePad + "/Notepad-Cut");
+
+		return filesPath;
+	}
+
+	private static List<String> banques() {
+		List<String> filesPath = new ArrayList<>();
+		for (int i = 1; i <= 8; i++) {
+			String variantPath = "./bank-variants/Variant0000" + (i) + "/";
+			filesPath.add(variantPath);
+		}
+		return filesPath;
 	}
 
 	public static void main(String[] args) {
