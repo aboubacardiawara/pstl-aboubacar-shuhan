@@ -16,7 +16,7 @@ public class Main {
 	private static int VARIANT_ID = 1;
 
 	private static void example() {
-		List<String> filesPath = notepad();
+		List<String> filesPath = argouml();
 
 		List<IRUAST> ruasts = filesPath.stream()
 				.map(path -> new JDTtoRUASTAdapter(VARIANT_ID++).adapt(path))
@@ -29,13 +29,7 @@ public class Main {
 		new BlocsIdentifier().findBlocs(mergedTree);
 
 		System.out.println("taille: " + mergedTree.size());
-		Finder finder = new Finder(mergedTree);
-		List<IRUAST> matched = finder.findByBloc(9);
-		System.out.println("matched size: " + matched.size());
-		matched.parallelStream().forEach(
-			ruast -> System.out.println("[bloc " + ruast.getRoot().getBlock() + "] " +
-			 ruast.getName()/*.substring(0, Math.min(70, ruast.getName().length()))*/)
-		);
+		
 	}
 
 	private static List<String> notepad() {
@@ -53,10 +47,12 @@ public class Main {
 
 	private static List<String> argouml() {
 		List<String> filesPath = new ArrayList<>();
-		for (int i = 1; i <= 10; i++) {
+		for (int i = 1; i <= 9; i++) {
 			String variantPath = "D:/cours/sorbonne/master/m1/s6/pstl/argouml/argouml/Variant000" + (i) + "/";
 			filesPath.add(variantPath);
 		}
+		String variant10Path = "D:/cours/sorbonne/master/m1/s6/pstl/argouml/argouml/Variant0010/";
+		filesPath.add(variant10Path);
 		return filesPath;
 	}
 
