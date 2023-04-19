@@ -59,11 +59,12 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         groupes = new HashMap<>();
         cu.accept(this);
         if (groupes.get("class") == null || groupes.get("class").isEmpty()) {
-            Utile.DEBUG_ON = true;
+        //Utile.DEBUG_ON = true;
            Utile.debug_print("groupes[" + variantId + "]: " + groupes);
            Utile.debug_print(currentFile);
+           return null;
         }
-        cu.accept(this);
+
         return groupes.get("class").get(0);
     }
 
@@ -178,7 +179,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             CompilationUnit cu = getCompilationUnit(e);
             currentFile = e;
             return this.adapt(cu);
-        }).collect(Collectors.toList());
+        }).filter(ruast -> ruast != null).collect(Collectors.toList());
 
 
         // la racine est un noeud de type VARIANT
