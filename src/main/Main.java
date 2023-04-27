@@ -6,11 +6,15 @@ import java.util.stream.Collectors;
 
 import main.adaptation.JDTtoRUASTAdapter;
 import main.adaptation.interfaces.IRUAST;
+import main.exporter.IExporter;
+import main.exporter.implem.DotExporter;
+import main.exporter.implem.DoteExportWithColor;
 import main.fusion.Merger;
 import main.identificationblocs.BlocsIdentifier;
 
 public class Main {
 	private static int VARIANT_ID = 1;
+	private String exportFile = null;
 
 	private static List<IRUAST> sequentialAdaptation(List<String> filesPath) {
 		return filesPath.stream()
@@ -53,11 +57,8 @@ public class Main {
 				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
 
 		new BlocsIdentifier().findBlocs(mergedTree);
-
-		Finder finder = new Finder(mergedTree);
-		List<IRUAST> res = finder.findByBloc(4);
-		res.forEach(ruast -> System.out.println(ruast.getName()));
-
+		IExporter exporter = new DoteExportWithColor("exported/banques.dot");
+		exporter.export(mergedTree);
 	}
 
 	private static List<String> project() {
@@ -73,7 +74,6 @@ public class Main {
 		filesPath.add(notePad + "/Notepad-Find");
 		filesPath.add(notePad + "/Notepad-Full");
 		filesPath.add(notePad + "/Notepad-Undo-Redo");
-
 		return filesPath;
 	}
 
