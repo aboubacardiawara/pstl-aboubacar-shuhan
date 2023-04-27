@@ -1,11 +1,8 @@
 package main;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import main.adaptation.JDTtoRUASTAdapter;
 import main.adaptation.interfaces.IRUAST;
@@ -15,12 +12,22 @@ import main.identificationblocs.BlocsIdentifier;
 public class Main {
 	private static int VARIANT_ID = 1;
 
-	private static void example() {
-		List<String> filesPath = argouml();
-
-		List<IRUAST> ruasts = filesPath.stream()
+	private static List<IRUAST> sequentialAdaptation(List<String> filesPath) {
+		return filesPath.stream()
 				.map(path -> new JDTtoRUASTAdapter(VARIANT_ID++).adapt(path))
 				.collect(Collectors.toList());
+	}
+
+	private static List<IRUAST> paralleleAdaptation(List<String> filesPath) {
+		return filesPath.stream()
+				.map(path -> new JDTtoRUASTAdapter(VARIANT_ID++).adapt(path))
+				.collect(Collectors.toList());
+	}
+
+	private static void exampleSequential() {
+		List<String> filesPath = project();
+
+		List<IRUAST> ruasts = sequentialAdaptation(filesPath);
 
 		IRUAST mergedTree = ruasts.stream().reduce(
 				ruasts.get(0),
@@ -28,18 +35,43 @@ public class Main {
 
 		new BlocsIdentifier().findBlocs(mergedTree);
 
-		System.out.println("taille: " + mergedTree.size());
-		
+		Finder finder = new Finder(mergedTree);
+		List<IRUAST> res = finder.findByBloc(6);
+		res.forEach(ruast -> System.out.println(ruast.getName()));
+	}
+
+	private static void exampleParallele() {
+		List<String> filesPath = project();
+
+		long startTime = System.currentTimeMillis();
+		List<IRUAST> ruasts = paralleleAdaptation(filesPath);
+		long endTime = System.currentTimeMillis();
+		System.out.println("Duration (adaptation): " + (endTime - startTime) + " (ms)");
+
+		IRUAST mergedTree = ruasts.stream().reduce(
+				ruasts.get(0),
+				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
+
+		new BlocsIdentifier().findBlocs(mergedTree);
+
+		Finder finder = new Finder(mergedTree);
+		List<IRUAST> res = finder.findByBloc(4);
+		res.forEach(ruast -> System.out.println(ruast.getName()));
+
+	}
+
+	private static List<String> project() {
+		return banques();
 	}
 
 	private static List<String> notepad() {
 		String notePad = "C:/Users/aboub_bmdb7gr/Downloads/Variant-Notepad";
 		List<String> filesPath = new ArrayList<>();
+		filesPath.add(notePad + "/Notepad-Copy");
+		filesPath.add(notePad + "/Notepad-Cut");
+		filesPath.add(notePad + "/Notepad-Cut-Find");
 		filesPath.add(notePad + "/Notepad-Find");
 		filesPath.add(notePad + "/Notepad-Full");
-		filesPath.add(notePad + "/Notepad-Cut");
-		filesPath.add(notePad + "/Notepad-Copy");
-		filesPath.add(notePad + "/Notepad-Cut-Find");
 		filesPath.add(notePad + "/Notepad-Undo-Redo");
 
 		return filesPath;
@@ -67,9 +99,10 @@ public class Main {
 
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
-		example();
+		exampleParallele();
 		long endTime = System.currentTimeMillis();
-		System.out.println("Duration: " + (endTime-startTime) +" (ms)");
+		System.out.println("Duration(parallele): " + (endTime - startTime) + " (ms)");
+
 	}
 
 }
