@@ -9,6 +9,7 @@ import main.adaptation.interfaces.IRUAST;
 import main.exporter.IExporter;
 import main.exporter.implem.DotExporter;
 import main.exporter.implem.DoteExportWithColor;
+import main.exporter.implem.JAVACodeExporter;
 import main.fusion.Merger;
 import main.identificationblocs.BlocsIdentifier;
 
@@ -56,9 +57,8 @@ public class Main {
 				ruasts.get(0),
 				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
 
-		new BlocsIdentifier().findBlocs(mergedTree);
-		IExporter exporter = new DoteExportWithColor("exported/banques.dot");
-		exporter.export(mergedTree);
+		IExporter codegenerator = new JAVACodeExporter("generatedcode/bank");
+		codegenerator.export(mergedTree);
 	}
 
 	private static List<String> project() {
