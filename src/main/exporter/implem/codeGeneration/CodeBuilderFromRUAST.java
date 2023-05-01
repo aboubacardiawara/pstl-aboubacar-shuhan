@@ -56,9 +56,6 @@ public class CodeBuilderFromRUAST {
         TypeDeclaration typeDecl = (TypeDeclaration) jdtNode;
 
         StringBuilder sb = new StringBuilder();
-        // get the name
-        String className = Utile.buildClassName(ruast);
-        sb.append(className);
 
         // get the modifier
         int modifiers = typeDecl.getModifiers();
@@ -79,6 +76,13 @@ public class CodeBuilderFromRUAST {
         if (Modifier.isFinal(modifiers)) {
             sb.append("final");
         }
+
+        if (typeDecl.isInterface()) {
+            sb.append(" interface ");
+        } else {
+            sb.append(" class ");
+        }
+        sb.append(Utile.buildClassName(ruast));
 
         // get the father class and the implements
         Type superclassType = typeDecl.getSuperclassType();
@@ -131,8 +135,16 @@ public class CodeBuilderFromRUAST {
         return methodBodyBuilder.toString();
     }
 
+    /**
+     * Construit le code source associé à une
+     * instruction. Une méthode est composée de
+     * plusieurs instructions.
+     * 
+     * @param ruast
+     * @return
+     */
     private static String getInstructionSourceCode(IRUAST ruast) {
-        return ruast.getName();
+        return ruast.getRoot().getJdtNode().toString();
     }
 
     /**
@@ -142,7 +154,7 @@ public class CodeBuilderFromRUAST {
      * @return
      */
     private static String getFieldSourceCode(IRUAST ruast) {
-        return ruast.getName();
+        return ruast.getRoot().getJdtNode().toString();
     }
 
 }
