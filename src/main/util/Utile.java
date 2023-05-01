@@ -1,6 +1,13 @@
 package main.util;
 
+import java.util.List;
+
+import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+
 import main.adaptation.interfaces.IRUAST;
+
+import main.util.Utile;
 
 public class Utile {
 	public static boolean DEBUG_ON = false;

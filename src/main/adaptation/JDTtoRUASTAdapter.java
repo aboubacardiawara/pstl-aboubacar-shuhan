@@ -122,16 +122,18 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         return super.visit(node);
     }
 
-    /** Construit une chaine qui servera du nom pour la methode.
-     * En effet prendre tout simplement le nom la methode pour introduire
-     * de l'ambiguite dans le cas ou la méthode à fait l'objet d'un ou plusieurs 
-     * surcharges. C'est pourquoi en plus du nom, nous introduirons d'autres informations
-     * sur la methode à savoir l'accesseur, le type de retour, les types des arguments si
-     * ils existents.
+    /**
+     * Construit une chaine qui servira du nom pour la methode.
+     * En effet prendre tout simplement le nom la methode peut introduire
+     * de l'ambiguite dans le cas ou la méthode à fait l'objet d'un ou plusieurs
+     * surcharges. C'est pourquoi en plus du nom, nous introduirons d'autres
+     * informations
+     * sur la methode à savoir l'accesseur, le type de retour, les types des
+     * arguments si ils existents.
      * Par exemple pour la méthode presente, le nom calculé sera:
-     *  "private-String-methodDeclarationName(MethodDeclaration)""
+     * "private-String-methodDeclarationName(MethodDeclaration)""
      */
-    private String methodDeclarationName(MethodDeclaration methodDeclaration) {
+    public static String methodDeclarationName(MethodDeclaration methodDeclaration) {
         StringBuilder methodSignature = new StringBuilder();
 
         // Récupérer les accesseurs de la méthode (s'ils existent)
@@ -180,16 +182,22 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     }
 
     /**
-     * Quand on visite les champs des classes, l'idée est d'ajouter dans la collection
-     * des attributs dans <b>groupes</b> (liste associée à la clé "field" dans groupes). On doit en conséquence
+     * Quand on visite les champs des classes, l'idée est d'ajouter dans la
+     * collection
+     * des attributs dans <b>groupes</b> (liste associée à la clé "field" dans
+     * groupes). On doit en conséquence
      * construitre l'arbre <b>RUATS</b> qui lui correspond. Cela revient à préciser:
      * <ol>
-     *  <li> <b>ses enfantsS</b> (des <b>RUATS</b>): aucun dans le cas d'un attribut.</li>
-     *  <li>
-     *      <b>son père:</b> La visite de l'AST de JDT etant en profondeur, le parent du noeud courant 
-     *      est forcement visité. Cela signfie qu'on a déjà construit le RUAST correspondant
-     *      à son père. On peut facilement le retrouver dans le groupe des méthodes (clé "method" dans groupe).
-     *  </li>
+     * <li><b>ses enfantsS</b> (des <b>RUATS</b>): aucun dans le cas d'un
+     * attribut.</li>
+     * <li>
+     * <b>son père:</b> La visite de l'AST de JDT etant en profondeur, le parent du
+     * noeud courant
+     * est forcement visité. Cela signfie qu'on a déjà construit le RUAST
+     * correspondant
+     * à son père. On peut facilement le retrouver dans le groupe des méthodes (clé
+     * "method" dans groupe).
+     * </li>
      * </ol>
      */
     @Override
@@ -211,6 +219,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     /**
      * Calcul de l'identifiant de la variable.
+     * 
      * @param node
      * @return
      */
@@ -235,7 +244,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
             Set<Integer> variants = new HashSet<>();
             variants.add(variantId);
-            IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.STATEMENT);
+            IRUASTNode root = new RUASTNode((ASTNode) statement, 0, variants, RUASTNodeType.STATEMENT);
             if (parent == null) {
                 Utile.debug_print(node);
                 Utile.debug_print(node.getParent());
@@ -251,10 +260,11 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     /**
      * On doit trouver l'arbre RUAST contenant un noeud en parametre.
-     * Cette méthode est utilisée pour retrouver les parents des noeuds 
+     * Cette méthode est utilisée pour retrouver les parents des noeuds
      * (voir visit(FieldDeclaration|MethodDeclaration)).
+     * 
      * @param nodeToFind: le noeud à retrouver dans le dictionnaire groupes.
-     * @param groupe: une clé dans le dictionnaire groupes.
+     * @param groupe:     une clé dans le dictionnaire groupes.
      * @return
      */
     private IRUAST findInGroupes(ASTNode nodeToFind, String groupe) {
@@ -277,9 +287,11 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
     /**
      * Construit un arbre RUATS à partir des sources d'un projet?
-     * @param variantPath represente ici le chemin vers la racine d'une 
-     * applicaiton Java.
-     * @return Un arbre RUAST decrivant le projet (Variant -> [CLass -> [Field] && [Method -> Statement] ])
+     * 
+     * @param variantPath represente ici le chemin vers la racine d'une
+     *                    applicaiton Java.
+     * @return Un arbre RUAST decrivant le projet (Variant -> [CLass -> [Field] &&
+     *         [Method -> Statement] ])
      */
     @Override
     public IRUAST adapt(String variantPath) {
@@ -339,10 +351,9 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         return files;
     }
 
-    
     /**
      * Verifie si le noeud est dans une classe anonyme ou pas.
-     * Rappel: Nous faisons abstraction du type des instructions. 
+     * Rappel: Nous faisons abstraction du type des instructions.
      * - cas1: Si une methode est dans une classe anonyme, elle correspond à
      * une instruction et nous faisons abstraction des instructions pour le moment.
      * - cas 2: Si c'est un bloc d'instruction, c'est pareil, inutile de chercher la

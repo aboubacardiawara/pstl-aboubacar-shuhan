@@ -53,7 +53,7 @@ public class Main {
 		long endTime = System.currentTimeMillis();
 		System.out.println("Duration (adaptation): " + (endTime - startTime) + " (ms)");
 
-		IRUAST mergedTree = ruasts.stream().reduce(
+		IRUAST mergedTree = ruasts.subList(1, ruasts.size()).stream().reduce(
 				ruasts.get(0),
 				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
 

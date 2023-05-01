@@ -126,13 +126,22 @@ public class CodeBuilderFromRUAST {
      */
     private static String getMethodSourceCode(IRUAST ruast) {
         StringBuilder methodBodyBuilder = new StringBuilder();
-        methodBodyBuilder.append(ruast.getName());
+        methodBodyBuilder.append(getmethodSignature(ruast));
         methodBodyBuilder.append("{\n");
         ruast.getChildren().forEach(
-                child -> methodBodyBuilder.append(getInstructionSourceCode(child) + "\n"));
+                child -> {
+                    String code = getInstructionSourceCode(child);
+                    methodBodyBuilder.append(code);
+                });
 
         methodBodyBuilder.append("}");
         return methodBodyBuilder.toString();
+    }
+
+    private static Object getmethodSignature(IRUAST ruast) {
+        String signature = ruast.getRoot().getJdtNode().toString().split("\n")[0];
+        signature = signature.substring(0, signature.length() - 1);
+        return signature;
     }
 
     /**
@@ -144,7 +153,12 @@ public class CodeBuilderFromRUAST {
      * @return
      */
     private static String getInstructionSourceCode(IRUAST ruast) {
-        return ruast.getRoot().getJdtNode().toString();
+        String sourceCode = ruast.getRoot().getJdtNode().toString();
+        // String sourceCode = ruast.getName();
+        System.out.println("<<<<<");
+        System.out.println(sourceCode);
+        System.out.println(">>>>>");
+        return sourceCode;
     }
 
     /**
