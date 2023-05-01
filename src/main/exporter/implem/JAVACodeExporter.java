@@ -1,7 +1,9 @@
 package main.exporter.implem;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -42,9 +44,16 @@ public class JAVACodeExporter implements IExporter {
         try {
             Files.deleteIfExists(filePath);
             Files.createFile(filePath);
+            writeSourceCode(filePath, ruast);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void writeSourceCode(Path filePath, IRUAST ruast) throws IOException {
+        Writer writer = new FileWriter(filePath.toString());
+        writer.write(ruast.getRoot().getJdtNode().toString());
+        writer.close();
     }
 
     private String buildClassName(IRUAST ruast) {
