@@ -19,4 +19,11 @@ public class Utile {
 			System.out.println("[DEBUG] " + msg.toString());
 		}
 	}
+
+	public static String buildClassName(IRUAST ruast) {
+		// ruaste.getName(): className>1parentName>...>nparentName
+		String name = ruast.getName().split(">")[0];
+		return name;
+	}
+
 }

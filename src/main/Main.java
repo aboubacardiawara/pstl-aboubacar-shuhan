@@ -9,7 +9,7 @@ import main.adaptation.interfaces.IRUAST;
 import main.exporter.IExporter;
 import main.exporter.implem.DotExporter;
 import main.exporter.implem.DoteExportWithColor;
-import main.exporter.implem.JAVACodeExporter;
+import main.exporter.implem.codeGeneration.JAVACodeExporter;
 import main.fusion.Merger;
 import main.identificationblocs.BlocsIdentifier;
 

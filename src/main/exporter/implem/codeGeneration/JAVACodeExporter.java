@@ -1,4 +1,4 @@
-package main.exporter.implem;
+package main.exporter.implem.codeGeneration;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import main.adaptation.RUASTNodeType;
 import main.adaptation.interfaces.IRUAST;
 import main.exporter.IExporter;
+import main.util.Utile;
 
 public class JAVACodeExporter implements IExporter {
 
@@ -39,7 +40,7 @@ public class JAVACodeExporter implements IExporter {
 
     private void createFileFromRUAST(IRUAST ruast) {
         assert ruast.getRoot().getType() == RUASTNodeType.TYPE_DEFINITION : "Should be a type definition";
-        String fileName = buildClassName(ruast) + ".java";
+        String fileName = Utile.buildClassName(ruast) + ".java";
         Path filePath = Paths.get(this.folderPath + "/" + fileName);
         try {
             Files.deleteIfExists(filePath);
@@ -52,14 +53,9 @@ public class JAVACodeExporter implements IExporter {
 
     private void writeSourceCode(Path filePath, IRUAST ruast) throws IOException {
         Writer writer = new FileWriter(filePath.toString());
-        writer.write(ruast.getRoot().getJdtNode().toString());
+        String javaCode = CodeBuilderFromRUAST.buildFrom(ruast);
+        writer.write(javaCode);
         writer.close();
-    }
-
-    private String buildClassName(IRUAST ruast) {
-        // ruaste.getName(): className>1parentName>...>nparentName
-        String name = ruast.getName().split(">")[0];
-        return name;
     }
 
     /**
