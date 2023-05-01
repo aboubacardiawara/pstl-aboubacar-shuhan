@@ -31,18 +31,26 @@ public class JAVACodeExporter implements IExporter {
      */
     private void createOnlyClassFiles(IRUAST ruast) {
         createFolder();
-        createFileFromRUAST(ruast.getChildren().get(0));
+        ruast.getChildren().forEach(
+                child -> createFileFromRUAST(child));
     }
 
     private void createFileFromRUAST(IRUAST ruast) {
         assert ruast.getRoot().getType() == RUASTNodeType.TYPE_DEFINITION : "Should be a type definition";
-        String fileName = "RandomJavaClass.java";
+        String fileName = buildClassName(ruast) + ".java";
         Path filePath = Paths.get(this.folderPath + "/" + fileName);
         try {
+            Files.deleteIfExists(filePath);
             Files.createFile(filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String buildClassName(IRUAST ruast) {
+        // ruaste.getName(): className>1parentName>...>nparentName
+        String name = ruast.getName().split(">")[0];
+        return name;
     }
 
     /**
