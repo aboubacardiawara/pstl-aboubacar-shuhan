@@ -25,7 +25,7 @@ public class BlocsIdentifier {
         Map<Set<Integer>, Integer> env = new HashMap<>();
         findBlocsAux(ruast, env);
         System.out.println("Features[" + env.size() + "]: " + env);
-        System.out.println(this.dependanciesManager.getRelations());
+        System.out.println(this.dependanciesManager.areDependant(1, 0));
         return ruast;
     }
 

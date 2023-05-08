@@ -21,6 +21,7 @@ public class FeatureCodeExporter extends JAVACodeExporter {
      * @param node
      * @return {boolean}
      */
+    @Override
     protected boolean shouldBeGenerated(IRUAST node) {
         int nodeBloc = node.getRoot().getBlock();
         return this.blocToGenerate == nodeBloc
