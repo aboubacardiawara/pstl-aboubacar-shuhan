@@ -14,6 +14,7 @@ import main.identificationblocs.DependanciesManager;
 
 public class Main {
 	private static int VARIANT_ID = 1;
+    private static String GENERATION_PATH;
 	private String exportFile = null;
 
 	private static List<IRUAST> sequentialAdaptation(List<String> filesPath) {
@@ -59,8 +60,8 @@ public class Main {
 		BlocsIdentifier blocsIdentifier = new BlocsIdentifier();
 		blocsIdentifier.findBlocs(mergedTree);
 
-		IExporter codegenerator = new FeatureCodeExporter("generatedcode/notepad",
-				blocsIdentifier.getDependanciesManager(), 6);
+		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,
+				blocsIdentifier.getDependanciesManager(), 3);
 		codegenerator.export(mergedTree);
 	}
 
@@ -77,6 +78,8 @@ public class Main {
 		filesPath.add(notePad + "/Notepad-Find");
 		filesPath.add(notePad + "/Notepad-Full");
 		filesPath.add(notePad + "/Notepad-Undo-Redo");
+
+		GENERATION_PATH = "generatedcode/notepad";
 		return filesPath;
 	}
 
@@ -88,6 +91,8 @@ public class Main {
 		}
 		String variant10Path = "D:/cours/sorbonne/master/m1/s6/pstl/argouml/argouml/Variant0010/";
 		filesPath.add(variant10Path);
+		
+		GENERATION_PATH = "generatedcode/argouml";
 		return filesPath;
 	}
 
@@ -97,6 +102,8 @@ public class Main {
 			String variantPath = "./bank-variants/Variant0000" + (i) + "/";
 			filesPath.add(variantPath);
 		}
+		
+		GENERATION_PATH = "generatedcode/bank";
 		return filesPath;
 	}
 

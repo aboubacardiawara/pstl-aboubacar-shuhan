@@ -218,7 +218,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         for (VariableDeclarationFragment variableDeclarationFragment : fragments) {
             FieldDeclaration newField = newFieldNode(node, variableDeclarationFragment);
             IRUASTNode root = new RUASTNode(newField, 0, variants, RUASTNodeType.FIELD);
-            root.setName(variableDeclarationFragment.toString());
+            root.setName(variableDeclarationFragment.getName().toString());
             ASTNode classNode = node.getParent();
             IRUAST parent = findThroughClasses(classNode);
             Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
@@ -232,15 +232,12 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     }
 
     private FieldDeclaration newFieldNode(FieldDeclaration node, VariableDeclarationFragment variableDeclarationFragment) {
-        // create a new AST for the new FieldDeclaration node
         AST newAST = AST.newAST(AST.JLS3);
     
-        // create a new VariableDeclarationFragment with the same name as the original one
         SimpleName newName = newAST.newSimpleName(variableDeclarationFragment.getName().getIdentifier());
         VariableDeclarationFragment newFragment = newAST.newVariableDeclarationFragment();
         newFragment.setName(newName);
     
-        // create a new FieldDeclaration with the same type and modifiers as the original one, but with the new VariableDeclarationFragment
         FieldDeclaration newDeclaration = newAST.newFieldDeclaration(newFragment);
         newDeclaration.setType((Type) ASTNode.copySubtree(newAST, node.getType()));
         newDeclaration.modifiers().addAll(ASTNode.copySubtrees(newAST, node.modifiers()));
