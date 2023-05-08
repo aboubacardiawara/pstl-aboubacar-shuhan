@@ -57,12 +57,12 @@ public class Main {
 				ruasts.get(0),
 				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
 
-		IExporter codegenerator = new JAVACodeExporter("generatedcode/bank");
-		codegenerator.export(mergedTree);
+		//IExporter codegenerator = new JAVACodeExporter("generatedcode/argouml");
+		//codegenerator.export(mergedTree);
 	}
 
 	private static List<String> project() {
-		return banques();
+		return notepad();
 	}
 
 	private static List<String> notepad() {

@@ -1,5 +1,6 @@
 package main.exporter.implem.codeGeneration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import main.adaptation.RUASTNodeType;
@@ -8,9 +9,13 @@ import main.util.Utile;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.Type;
-import java.lang.reflect.Modifier;
+import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.Modifier;
 
 public class CodeBuilderFromRUAST {
 
@@ -67,14 +72,14 @@ public class CodeBuilderFromRUAST {
         } else if (Modifier.isPrivate(modifiers)) {
             sb.append("private");
         } else {
-            throw new NotImplementedException("[Method modifier] Unhandled case: " + modifiers);
+            sb.append("");
         }
 
         if (Modifier.isAbstract(modifiers)) {
-            sb.append("abstract");
+            sb.append(" abstract");
         }
         if (Modifier.isFinal(modifiers)) {
-            sb.append("final");
+            sb.append(" final");
         }
 
         if (typeDecl.isInterface()) {
@@ -126,7 +131,7 @@ public class CodeBuilderFromRUAST {
      */
     private static String getMethodSourceCode(IRUAST ruast) {
         StringBuilder methodBodyBuilder = new StringBuilder();
-        methodBodyBuilder.append(getmethodSignature(ruast));
+        methodBodyBuilder.append(getMethodSignature(ruast.getRoot().getJdtNode()));
         methodBodyBuilder.append("{\n");
         ruast.getChildren().forEach(
                 child -> {
@@ -138,10 +143,56 @@ public class CodeBuilderFromRUAST {
         return methodBodyBuilder.toString();
     }
 
-    private static Object getmethodSignature(IRUAST ruast) {
-        String signature = ruast.getRoot().getJdtNode().toString().split("\n")[0];
-        signature = signature.substring(0, signature.length() - 1);
-        return signature;
+    public static String getMethodSignature(ASTNode astNode) {
+        StringBuilder methodSignature = new StringBuilder();
+
+        if (astNode instanceof MethodDeclaration) {
+            MethodDeclaration methodDeclaration = (MethodDeclaration) astNode;
+
+            // Get the modifiers of the method
+            List<IExtendedModifier> modifiers = methodDeclaration.modifiers();
+            if (modifiers != null) {
+                for (IExtendedModifier modifier : modifiers) {
+                    if (modifier instanceof Modifier) {
+                        methodSignature.append(((Modifier) modifier).getKeyword().toString()).append(" ");
+                    } else if (modifier instanceof Annotation) {
+                        methodSignature.append(((Annotation) modifier).toString()).append(" ");
+                    }
+                }
+            }
+
+            // Get the return type
+            Type returnType = methodDeclaration.getReturnType2();
+            if (returnType != null) {
+                methodSignature.append(returnType.toString()).append(" ");
+            }
+
+            // Get the name of the method
+            String methodName = methodDeclaration.getName().toString();
+            methodSignature.append(methodName).append("(");
+
+            // Get the parameters and process them
+            List<SingleVariableDeclaration> parameters = methodDeclaration.parameters();
+            if (parameters != null) {
+                for (SingleVariableDeclaration parameter : parameters) {
+                    // Get the type and name of the parameter
+                    Type parameterType = parameter.getType();
+                    String parameterName = parameter.getName().toString();
+
+                    // Add the type and name of the parameter to the method signature
+                    methodSignature.append(parameterType.toString()).append(" ").append(parameterName).append(", ");
+                }
+
+                // Remove the final comma and space from the parameter list
+                if (parameters.size() > 0) {
+                    methodSignature.delete(methodSignature.length() - 2, methodSignature.length());
+                }
+            }
+
+            methodSignature.append(")");
+        }
+
+        return methodSignature.toString();
     }
 
     /**
@@ -153,11 +204,8 @@ public class CodeBuilderFromRUAST {
      * @return
      */
     private static String getInstructionSourceCode(IRUAST ruast) {
-        String sourceCode = ruast.getRoot().getJdtNode().toString();
-        // String sourceCode = ruast.getName();
-        System.out.println("<<<<<");
-        System.out.println(sourceCode);
-        System.out.println(">>>>>");
+        // String sourceCode = ruast.getRoot().getJdtNode().toString();
+        String sourceCode = ruast.getName();
         return sourceCode;
     }
 
