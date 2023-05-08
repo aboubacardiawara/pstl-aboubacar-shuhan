@@ -1,0 +1,1 @@
+Ce repertoire est utilisé pour contenir le code genere à partir de l'AST maximal
