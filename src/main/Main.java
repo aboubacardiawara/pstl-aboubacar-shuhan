@@ -10,6 +10,7 @@ import main.exporter.IExporter;
 import main.exporter.implem.DotExporter;
 import main.exporter.implem.DoteExportWithColor;
 import main.exporter.implem.codeGeneration.JAVACodeExporter;
+import main.exporter.implem.codeGeneration.blocCodeGenerator.FeatureCodeExporter;
 import main.fusion.Merger;
 import main.identificationblocs.BlocsIdentifier;
 
@@ -57,7 +58,10 @@ public class Main {
 				ruasts.get(0),
 				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
 
-		IExporter codegenerator = new JAVACodeExporter("generatedcode/banques");
+		BlocsIdentifier blocsIdentifier = new BlocsIdentifier();
+		blocsIdentifier.findBlocs(mergedTree);
+
+		IExporter codegenerator = new FeatureCodeExporter("generatedcode/banques", 2);
 		codegenerator.export(mergedTree);
 	}
 
