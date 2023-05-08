@@ -1,6 +1,5 @@
 package main.exporter.implem.codeGeneration;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -8,16 +7,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.eclipse.core.internal.resources.Folder;
 import java.nio.file.Path;
-import org.apache.commons.lang.NotImplementedException;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Modifier;
 
 import main.adaptation.RUASTNodeType;
@@ -28,10 +28,12 @@ import main.util.Utile;
 public class JAVACodeExporter implements IExporter {
 
     protected String folderPath;
+    protected boolean shoulGenAllFeatures;
 
     public JAVACodeExporter(String folderPath) {
         super();
         this.folderPath = folderPath;
+        this.shoulGenAllFeatures = false;
     }
 
     @Override
@@ -67,8 +69,17 @@ public class JAVACodeExporter implements IExporter {
     protected void writeSourceCode(Path filePath, IRUAST ruast) throws IOException {
         Writer writer = new FileWriter(filePath.toString());
         String javaCode = generateCode(ruast);
-        writer.write(javaCode);
+        CompilationUnit cu = compilationUnitFromStr(javaCode);
+        writer.write(cu.toString());
         writer.close();
+    }
+
+    protected CompilationUnit compilationUnitFromStr(String sourceCode) {
+        ASTParser parser = ASTParser.newParser(AST.JLS3);
+        parser.setKind(ASTParser.K_COMPILATION_UNIT);
+        parser.setSource(sourceCode.toCharArray());
+        CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+        return cu;
     }
 
     /**
@@ -168,7 +179,7 @@ public class JAVACodeExporter implements IExporter {
     protected String getClassBodyCode(IRUAST ruast) {
         StringBuilder classBodyBuilder = new StringBuilder();
         ruast.getChildren().forEach(
-            child -> classBodyBuilder.append(dispath(child) + "\n"));
+                child -> classBodyBuilder.append(dispath(child) + "\n"));
         return classBodyBuilder.toString();
     }
 
@@ -300,5 +311,10 @@ public class JAVACodeExporter implements IExporter {
      */
     protected boolean shouldBeGenerated(IRUAST node) {
         return true;
+    }
+
+    @Override
+    public void generateMaximalCode() {
+        this.shoulGenAllFeatures = true;
     }
 }
