@@ -1,14 +1,17 @@
 package main.exporter.implem.codeGeneration.blocCodeGenerator;
 import main.adaptation.interfaces.IRUAST;
 import main.exporter.implem.codeGeneration.JAVACodeExporter;
+import main.identificationblocs.DependanciesManager;
 
 public class FeatureCodeExporter extends JAVACodeExporter {
 
     protected int blocToGenerate;
+    private DependanciesManager dependanciesManager;
 
-    public FeatureCodeExporter(String folderPath, int bloc) {
+    public FeatureCodeExporter(String folderPath, DependanciesManager dependanciesManager, int bloc) {
         super(folderPath);
         this.blocToGenerate = bloc;
+        this.dependanciesManager = dependanciesManager;
     }
 
     /**
@@ -19,7 +22,9 @@ public class FeatureCodeExporter extends JAVACodeExporter {
      * @return {boolean}
      */
     protected boolean shouldBeGenerated(IRUAST node) {
-        return this.blocToGenerate == node.getRoot().getBlock();
+        int nodeBloc = node.getRoot().getBlock();
+        return this.blocToGenerate == nodeBloc
+         || this.dependanciesManager.areDependant(blocToGenerate, nodeBloc);
     }
 
 }

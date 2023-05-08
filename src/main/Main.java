@@ -7,12 +7,10 @@ import java.util.stream.Collectors;
 import main.adaptation.JDTtoRUASTAdapter;
 import main.adaptation.interfaces.IRUAST;
 import main.exporter.IExporter;
-import main.exporter.implem.DotExporter;
-import main.exporter.implem.DoteExportWithColor;
-import main.exporter.implem.codeGeneration.JAVACodeExporter;
 import main.exporter.implem.codeGeneration.blocCodeGenerator.FeatureCodeExporter;
 import main.fusion.Merger;
 import main.identificationblocs.BlocsIdentifier;
+import main.identificationblocs.DependanciesManager;
 
 public class Main {
 	private static int VARIANT_ID = 1;
@@ -61,7 +59,8 @@ public class Main {
 		BlocsIdentifier blocsIdentifier = new BlocsIdentifier();
 		blocsIdentifier.findBlocs(mergedTree);
 
-		IExporter codegenerator = new FeatureCodeExporter("generatedcode/banques", 2);
+		IExporter codegenerator = new FeatureCodeExporter("generatedcode/banques",
+				blocsIdentifier.getDependanciesManager(), 0);
 		codegenerator.export(mergedTree);
 	}
 
