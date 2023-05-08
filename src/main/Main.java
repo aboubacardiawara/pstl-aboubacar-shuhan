@@ -59,13 +59,13 @@ public class Main {
 		BlocsIdentifier blocsIdentifier = new BlocsIdentifier();
 		blocsIdentifier.findBlocs(mergedTree);
 
-		IExporter codegenerator = new FeatureCodeExporter("generatedcode/banques",
-				blocsIdentifier.getDependanciesManager(), 0);
+		IExporter codegenerator = new FeatureCodeExporter("generatedcode/notepad",
+				blocsIdentifier.getDependanciesManager(), 6);
 		codegenerator.export(mergedTree);
 	}
 
 	private static List<String> project() {
-		return banques();
+		return notepad();
 	}
 
 	private static List<String> notepad() {
