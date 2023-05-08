@@ -44,8 +44,11 @@ public class JAVACodeExporter implements IExporter {
      */
     protected void createOnlyClassFiles(IRUAST ruast) {
         createFolder();
-        ruast.getChildren().forEach(
-                child -> createFileFromRUAST(child));
+        ruast.getChildren().forEach(child -> {
+            if (shouldBeGenerated(child)) {
+                createFileFromRUAST(child);
+            }
+        });
     }
 
     protected void createFileFromRUAST(IRUAST ruast) {
@@ -162,10 +165,10 @@ public class JAVACodeExporter implements IExporter {
      * - de ses attributs
      * - de ses méthodes
      */
-    protected static String getClassBodyCode(IRUAST ruast) {
+    protected String getClassBodyCode(IRUAST ruast) {
         StringBuilder classBodyBuilder = new StringBuilder();
         ruast.getChildren().forEach(
-                child -> classBodyBuilder.append(dispath(child) + "\n"));
+            child -> classBodyBuilder.append(dispath(child) + "\n"));
         return classBodyBuilder.toString();
     }
 
@@ -176,7 +179,7 @@ public class JAVACodeExporter implements IExporter {
      * @param ruast
      * @return
      */
-    private static String dispath(IRUAST ruast) {
+    protected String dispath(IRUAST ruast) {
         if (ruast.getRoot().getType() == RUASTNodeType.FIELD) {
             return getFieldSourceCode(ruast);
         }
@@ -189,8 +192,11 @@ public class JAVACodeExporter implements IExporter {
      * @param ruast
      * @return
      */
-    private static String getFieldSourceCode(IRUAST ruast) {
-        return ruast.getRoot().getJdtNode().toString();
+    protected String getFieldSourceCode(IRUAST ruast) {
+        if (shouldBeGenerated(ruast)) {
+            return ruast.getRoot().getJdtNode().toString();
+        }
+        return "\n";
     }
 
     /**
@@ -199,7 +205,10 @@ public class JAVACodeExporter implements IExporter {
      * @param ruast
      * @return
      */
-    private static String getMethodSourceCode(IRUAST ruast) {
+    protected String getMethodSourceCode(IRUAST ruast) {
+        if (!shouldBeGenerated(ruast)) {
+            return "\n";
+        }
         StringBuilder methodBodyBuilder = new StringBuilder();
         methodBodyBuilder.append(getMethodSignature(ruast.getRoot().getJdtNode()));
         methodBodyBuilder.append("{\n");
@@ -213,7 +222,7 @@ public class JAVACodeExporter implements IExporter {
         return methodBodyBuilder.toString();
     }
 
-    public static String getMethodSignature(ASTNode astNode) {
+    protected static String getMethodSignature(ASTNode astNode) {
         StringBuilder methodSignature = new StringBuilder();
 
         if (astNode instanceof MethodDeclaration) {
@@ -273,10 +282,23 @@ public class JAVACodeExporter implements IExporter {
      * @param ruast
      * @return
      */
-    private static String getInstructionSourceCode(IRUAST ruast) {
-        // String sourceCode = ruast.getRoot().getJdtNode().toString();
-        String sourceCode = ruast.getName();
+    protected String getInstructionSourceCode(IRUAST ruast) {
+        if (!shouldBeGenerated(ruast)) {
+            return "\n";
+        }
+        String sourceCode = ruast.getRoot().getJdtNode().toString();
+        // String sourceCode = ruast.getName();
         return sourceCode;
     }
 
+    /**
+     * Verifie si le code asscoié à un noeud soit etre genere.
+     * Dans le cas present, tout code doit etre genere.
+     * 
+     * @param node
+     * @return {boolean}
+     */
+    protected boolean shouldBeGenerated(IRUAST node) {
+        return true;
+    }
 }

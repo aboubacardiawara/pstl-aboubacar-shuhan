@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import main.adaptation.RUASTNodeType;
 import main.adaptation.interfaces.IRUAST;
 import main.exporter.IExporter;
-import main.exporter.implem.codeGeneration.CodeBuilderFromRUAST;
 import main.exporter.implem.codeGeneration.JAVACodeExporter;
 import main.util.Utile;
 
@@ -26,10 +25,15 @@ public class FeatureCodeExporter extends JAVACodeExporter {
         this.blocToGenerate = bloc;
     }
 
-
-    protected void writeSourceCode(Path filePath, IRUAST ruast) throws IOException {
-        
+    /**
+     * Verifie si le code asscoié à un noeud soit etre genere.
+     * C'est le cas son le bloc correspond à la fonctionnalité à generer.
+     * Plus tard si la fonctionnalité à generer en depend.
+     * @param node
+     * @return {boolean}
+     */
+    protected boolean shouldBeGenerated(IRUAST node) {
+        return true; // to change
     }
-
 
 }
