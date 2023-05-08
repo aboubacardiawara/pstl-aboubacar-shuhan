@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.swing.text.html.parser.Element;
+
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -20,11 +22,14 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.SimpleName;
 
 import main.adaptation.interfaces.IAdapter;
 import main.adaptation.interfaces.IRUASTNode;
@@ -207,23 +212,52 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         }
         Set<Integer> variants = new HashSet<>();
         variants.add(variantId);
-        IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.FIELD);
-        root.setName(fieldDeclarationName(node));
-        ASTNode classNode = node.getParent();
-        IRUAST parent = findThroughClasses(classNode);
-        Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
-        IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
-        insert("field", ruastTree);
+
+        // build ruast
+        List<VariableDeclarationFragment> fragments = node.fragments();
+        for (VariableDeclarationFragment variableDeclarationFragment : fragments) {
+            FieldDeclaration newField = newFieldNode(node, variableDeclarationFragment);
+            IRUASTNode root = new RUASTNode(newField, 0, variants, RUASTNodeType.FIELD);
+            root.setName(variableDeclarationFragment.toString());
+            ASTNode classNode = node.getParent();
+            IRUAST parent = findThroughClasses(classNode);
+            Utile.assertionCheck(parent != null, "le parent doit avoir ete visite [parcours en profondeur]");
+            IRUAST ruastTree = new RUASTTree(root, parent, new ArrayList<>());
+
+            // update groupe
+            insert("field", ruastTree);
+        }
+        
         return super.visit(node);
     }
 
+    private FieldDeclaration newFieldNode(FieldDeclaration node, VariableDeclarationFragment variableDeclarationFragment) {
+        // create a new AST for the new FieldDeclaration node
+        AST newAST = AST.newAST(AST.JLS3);
+    
+        // create a new VariableDeclarationFragment with the same name as the original one
+        SimpleName newName = newAST.newSimpleName(variableDeclarationFragment.getName().getIdentifier());
+        VariableDeclarationFragment newFragment = newAST.newVariableDeclarationFragment();
+        newFragment.setName(newName);
+    
+        // create a new FieldDeclaration with the same type and modifiers as the original one, but with the new VariableDeclarationFragment
+        FieldDeclaration newDeclaration = newAST.newFieldDeclaration(newFragment);
+        newDeclaration.setType((Type) ASTNode.copySubtree(newAST, node.getType()));
+        newDeclaration.modifiers().addAll(ASTNode.copySubtrees(newAST, node.modifiers()));
+        newDeclaration.setJavadoc((Javadoc) ASTNode.copySubtree(newAST, node.getJavadoc()));
+    
+        return newDeclaration;
+    }
+    
+
     /**
-     * Calcul de l'identifiant de la variable.
+     * Calcul du nom de la variable.
      * 
      * @param node
      * @return
      */
     private String fieldDeclarationName(FieldDeclaration node) {
+        System.out.println(node.fragments());
         return node.fragments().get(0).toString();
     }
 
