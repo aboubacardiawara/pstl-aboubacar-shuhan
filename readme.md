@@ -2,13 +2,16 @@
 
 # Auteurs
 
-Ce repertoire contient le code source de notre 
-
-
 # Execution
 
-# Experimentation
-La class main.Main dans le repetoire src est le point d'entrée du programme. Vous pouvez executer le projet sur chacun des projets suivants:
+# Rapide experimentation
+La class main.Main dans le repetoire src est le point d'entrée du programme. Vous pouvez executer pour voir le resultat de l'extraction sur les applications banque, notepad et argouml.
+
+```java
+private static List<String> project() {
+	return argouml(); // modifier pour changer l'application (banque() | notepad() | argouml())
+}
+```	
 
 ![](xp/duree.png)
 
