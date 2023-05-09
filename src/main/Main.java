@@ -75,12 +75,10 @@ public class Main {
 		codegenerator.export(mergedTree);
 		endTime = System.currentTimeMillis();
 		System.out.println("Duration (code generation): " + (endTime - startTime) + " (ms)");
-		
-
 	}
 
 	private static List<String> project() {
-		return notepad();
+		return argouml();
 	}
 
 	private static List<String> notepad() {
