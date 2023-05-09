@@ -53,19 +53,30 @@ public class Main {
 		long endTime = System.currentTimeMillis();
 		System.out.println("Duration (adaptation): " + (endTime - startTime) + " (ms)");
 
+		startTime = System.currentTimeMillis();
 		IRUAST mergedTree = ruasts.subList(1, ruasts.size()).stream().reduce(
 				ruasts.get(0),
 				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
 
+		endTime = System.currentTimeMillis();
+		System.out.println("Duration (merge): " + (endTime - startTime) + " (ms)");
+		
+		startTime = System.currentTimeMillis();
 		BlocsIdentifier blocsIdentifier = new BlocsIdentifier();
 		blocsIdentifier.findBlocs(mergedTree);
-
+		endTime = System.currentTimeMillis();
+		System.out.println("Duration (identification bloc): " + (endTime - startTime) + " (ms)");
+		
 		List<Integer> toGen = new ArrayList<>();
-		toGen.add(3);
 		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,
 				blocsIdentifier.getDependanciesManager(), toGen);
-		//codegenerator.generateMaximalCode();
+		codegenerator.generateMaximalCode();
+		startTime = System.currentTimeMillis();
 		codegenerator.export(mergedTree);
+		endTime = System.currentTimeMillis();
+		System.out.println("Duration (code generation): " + (endTime - startTime) + " (ms)");
+		
+
 	}
 
 	private static List<String> project() {
@@ -111,11 +122,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		long startTime = System.currentTimeMillis();
 		exampleParallele();
-		long endTime = System.currentTimeMillis();
-		System.out.println("Duration(parallele): " + (endTime - startTime) + " (ms)");
-
 	}
 
 }

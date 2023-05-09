@@ -33,7 +33,9 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.PrimitiveType.Code;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SimpleName;
 
 import main.adaptation.interfaces.IAdapter;
@@ -242,7 +244,6 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
         SimpleName newName = newAST.newSimpleName(variableDeclarationFragment.getName().getIdentifier());
         VariableDeclarationFragment newFragment = newAST.newVariableDeclarationFragment();
-        newFragment.setName(newName);
 
         // eventuelles vlaeur d'iinitialise
         if (variableDeclarationFragment.getInitializer() != null) {
@@ -250,21 +251,65 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
                     variableDeclarationFragment.getInitializer());
             newFragment.setInitializer(newInitializer);
         }
-
-        // oN cherche le type de la variable d'instance.
-        playGround(node, variableDeclarationFragment);
-
-        FieldDeclaration newDeclaration = newAST.newFieldDeclaration(newFragment);
-        newDeclaration.setType((Type) ASTNode.copySubtree(newAST, node.getType()));
-        // newDeclaration.setType(fieldType);
-        newDeclaration.modifiers().addAll(ASTNode.copySubtrees(newAST, node.modifiers()));
-        newDeclaration.setJavadoc((Javadoc) ASTNode.copySubtree(newAST, node.getJavadoc()));
+        FieldDeclaration newDeclaration;
+        if (variableDeclarationFragment.getExtraDimensions() > 0) {
+            return playGround(node, variableDeclarationFragment);
+        } else {
+            newFragment.setName(newName);
+            newDeclaration = newAST.newFieldDeclaration(newFragment);
+            newDeclaration.setType((Type) ASTNode.copySubtree(newAST, node.getType()));
+            newDeclaration.modifiers().addAll(ASTNode.copySubtrees(newAST, node.modifiers()));
+            newDeclaration.setJavadoc((Javadoc) ASTNode.copySubtree(newAST, node.getJavadoc()));
+        }
 
         return newDeclaration;
     }
 
-    private void playGround(FieldDeclaration field, VariableDeclarationFragment node) {
-        
+    private ArrayType getArrayType(FieldDeclaration node) {
+        AST newAST = AST.newAST(AST.JLS3);
+        ArrayType arrayType = newAST
+                .newArrayType(newAST.newSimpleType(newAST.newSimpleName(node.getType().toString())));
+        return arrayType;
+    }
+
+    private FieldDeclaration playGround(FieldDeclaration node, VariableDeclarationFragment var) {
+        FieldDeclaration fieldDeclaration = (FieldDeclaration) node;
+        int modifiers = fieldDeclaration.getModifiers();
+        Type type = fieldDeclaration.getType();
+        List<VariableDeclarationFragment> fragments = fieldDeclaration.fragments();
+        // Systm.out.println("fragments: " + fragments);
+        // create new type String[]
+        AST newAST = AST.newAST(AST.JLS3);
+
+        if (type.isPrimitiveType()) {
+            PrimitiveType primitiveType = (PrimitiveType) type;
+            String typeName = primitiveType.getPrimitiveTypeCode().toString().toLowerCase();
+            PrimitiveType simpleType = newAST.newPrimitiveType(PrimitiveType.toCode(typeName));
+            ArrayType arrayType = newAST.newArrayType(simpleType);
+            // create new variableDeclarationFragment
+            VariableDeclarationFragment newFragment = newAST.newVariableDeclarationFragment();
+            newFragment.setName(newAST.newSimpleName(var.getName().getIdentifier()));
+            // create new fieldDeclaration
+            FieldDeclaration newFieldDeclaration = newAST.newFieldDeclaration(newFragment);
+            newFieldDeclaration.setType(arrayType);
+            newFieldDeclaration.modifiers().addAll(ASTNode.copySubtrees(newAST, node.modifiers()));
+            newFieldDeclaration.setJavadoc((Javadoc) ASTNode.copySubtree(newAST, node.getJavadoc()));
+
+            return newFieldDeclaration;
+        } else {
+            Type simpleType = newAST.newSimpleType(newAST.newSimpleName(node.getType().toString()));
+            ArrayType arrayType = newAST.newArrayType(simpleType);
+            // create new variableDeclarationFragment
+            VariableDeclarationFragment newFragment = newAST.newVariableDeclarationFragment();
+            newFragment.setName(newAST.newSimpleName(var.getName().getIdentifier()));
+            // create new fieldDeclaration
+            FieldDeclaration newFieldDeclaration = newAST.newFieldDeclaration(newFragment);
+            newFieldDeclaration.setType(arrayType);
+            newFieldDeclaration.modifiers().addAll(ASTNode.copySubtrees(newAST, node.modifiers()));
+            newFieldDeclaration.setJavadoc((Javadoc) ASTNode.copySubtree(newAST, node.getJavadoc()));
+
+            return newFieldDeclaration;
+        }
     }
 
     @Override

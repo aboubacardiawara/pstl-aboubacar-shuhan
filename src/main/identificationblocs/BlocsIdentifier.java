@@ -24,8 +24,8 @@ public class BlocsIdentifier {
     public IRUAST findBlocs(IRUAST ruast) {
         Map<Set<Integer>, Integer> env = new HashMap<>();
         findBlocsAux(ruast, env);
-        System.out.println("Features[" + env.size() + "]: " + env);
-        System.out.println(this.dependanciesManager.areDependant(1, 0));
+        //System.out.println("Features[" + env.size() + "]: " + env);
+        //System.out.println(this.dependanciesManager.areDependant(1, 0));
         return ruast;
     }
 
