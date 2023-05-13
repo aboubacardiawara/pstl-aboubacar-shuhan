@@ -78,7 +78,7 @@ public class Main {
 	}
 
 	private static List<String> project() {
-		return argouml();
+		return notepad();
 	}
 
 	private static List<String> notepad() {
@@ -88,7 +88,7 @@ public class Main {
 		filesPath.add(notePad + "/Notepad-Cut");
 		filesPath.add(notePad + "/Notepad-Cut-Find");
 		filesPath.add(notePad + "/Notepad-Find");
-		filesPath.add(notePad + "/Notepad-Full");
+		//filesPath.add(notePad + "/Notepad-Full");
 		filesPath.add(notePad + "/Notepad-Undo-Redo");
 
 		GENERATION_PATH = "generatedcode/notepad";
@@ -110,7 +110,7 @@ public class Main {
 
 	private static List<String> banques() {
 		List<String> filesPath = new ArrayList<>();
-		for (int i = 1; i <= 4; i++) {
+		for (int i = 1; i <= 9; i++) {
 			String variantPath = "./bank-variants/Variant0000" + (i) + "/";
 			filesPath.add(variantPath);
 		}
