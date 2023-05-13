@@ -82,4 +82,9 @@ public class DotExporter implements IExporter {
         return str.replace("\"", "\\\"");
     }
 
+    @Override
+    public void generateMaximalCode() {
+        // do nothing
+    }
+
 }

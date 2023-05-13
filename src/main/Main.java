@@ -59,8 +59,7 @@ public class Main {
 				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
 
 		endTime = System.currentTimeMillis();
-		System.out.println("Duration (merge): " + (endTime - startTime) + " (ms)");
-		
+		System.out.println("Duration (merge): " + (endTime - startTime) + " (ms)");	
 		startTime = System.currentTimeMillis();
 		BlocsIdentifier blocsIdentifier = new BlocsIdentifier();
 		blocsIdentifier.findBlocs(mergedTree);
