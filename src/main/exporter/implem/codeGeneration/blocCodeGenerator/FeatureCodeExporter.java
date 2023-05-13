@@ -29,7 +29,23 @@ public class FeatureCodeExporter extends JAVACodeExporter {
         
         int nodeBloc = node.getRoot().getBlock();
         return this.blocToGenerate.contains(nodeBloc)
-         || blocToGenerate.stream().anyMatch(
+         || (currentBlocDependToBlocsToGenerate(nodeBloc)
+         && currentBlocIsNotMutuallyExclusiveToBlocsToGenerate(nodeBloc));
+    }
+
+    /**
+     * Verifie si le bloc courant n'est pas mutuellement exclusif avec 
+     * au moins un des blocs à generer.
+     * @param nodeBloc
+     * @return
+     */
+    private boolean currentBlocIsNotMutuallyExclusiveToBlocsToGenerate(int nodeBloc) {
+        return blocToGenerate.stream().noneMatch(
+            bloc -> this.dependanciesManager.areMutex(bloc, nodeBloc));
+    }
+
+    private boolean currentBlocDependToBlocsToGenerate(int nodeBloc) {
+        return blocToGenerate.stream().anyMatch(
             bloc -> this.dependanciesManager.areDependant(bloc, nodeBloc));
     }
 

@@ -10,39 +10,16 @@ import main.exporter.IExporter;
 import main.exporter.implem.codeGeneration.blocCodeGenerator.FeatureCodeExporter;
 import main.fusion.Merger;
 import main.identificationblocs.BlocsIdentifier;
-import main.identificationblocs.DependanciesManager;
 
 public class Main {
 	private static int VARIANT_ID = 1;
 	private static String GENERATION_PATH;
-	private String exportFile = null;
-
-	private static List<IRUAST> sequentialAdaptation(List<String> filesPath) {
-		return filesPath.stream()
-				.map(path -> new JDTtoRUASTAdapter(VARIANT_ID++).adapt(path))
-				.collect(Collectors.toList());
-	}
 
 	private static List<IRUAST> paralleleAdaptation(List<String> filesPath) {
 		return filesPath.stream()
+				.parallel()
 				.map(path -> new JDTtoRUASTAdapter(VARIANT_ID++).adapt(path))
 				.collect(Collectors.toList());
-	}
-
-	private static void exampleSequential() {
-		List<String> filesPath = project();
-
-		List<IRUAST> ruasts = sequentialAdaptation(filesPath);
-
-		IRUAST mergedTree = ruasts.stream().reduce(
-				ruasts.get(0),
-				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
-
-		new BlocsIdentifier().findBlocs(mergedTree);
-
-		Finder finder = new Finder(mergedTree);
-		List<IRUAST> res = finder.findByBloc(6);
-		res.forEach(ruast -> System.out.println(ruast.getName()));
 	}
 
 	private static void exampleParallele() {
@@ -69,15 +46,17 @@ public class Main {
 		List<Integer> toGen = new ArrayList<>();
 		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,
 				blocsIdentifier.getDependanciesManager(), toGen);
-		codegenerator.generateMaximalCode();
+		//codegenerator.generateMaximalCode();
 		startTime = System.currentTimeMillis();
 		codegenerator.export(mergedTree);
 		endTime = System.currentTimeMillis();
 		System.out.println("Duration (code generation): " + (endTime - startTime) + " (ms)");
+		System.out.println("relations: " + blocsIdentifier.getDependanciesManager().getDependencyRelations());
+		System.out.println("relations: " + blocsIdentifier.getDependanciesManager().getMutexRelations());
 	}
 
 	private static List<String> project() {
-		return notepad();
+		return banques();
 	}
 
 	private static List<String> notepad() {

@@ -23,38 +23,33 @@ public class BlocsIdentifier {
 
     public IRUAST findBlocs(IRUAST ruast) {
         Map<Set<Integer>, Integer> env = new HashMap<>();
+        System.out.println("before env: " + env);
         findBlocsAux(ruast, env);
-        //System.out.println("Features[" + env.size() + "]: " + env);
-        //System.out.println(this.dependanciesManager.areDependant(1, 0));
+        // env sera exploité pour definir les relation entre les blocs
+        System.out.println("after env: " + env + " " + id);
+        this.dependanciesManager.resolveDependancies(env);
         return ruast;
     }
 
-    protected int findBlocsAux(IRUAST ruast, Map<Set<Integer>, Integer> env) {
+    protected void findBlocsAux(IRUAST ruast, Map<Set<Integer>, Integer> env) {
         Set<Integer> currenctVariant = ruast.getVariants();
+        System.out.println("Current variant : " + currenctVariant);
         if (!env.containsKey(currenctVariant)) {
+            System.out.println("Nouveau bloc");
             Integer newBloc = getNextIdForBloc();
-            // dependancies manager
-            this.dependanciesManager.newBloc(newBloc);
             env.put(currenctVariant, newBloc);
         }
-
-        // si le bloc (bf) est different de celui (bp) du parent , 
-        // alors bf depend de bp.
         int bp = env.get(currenctVariant);
-
         ruast.getRoot().setBlock(bp);
 
         for (IRUAST child : ruast.getChildren()) {
-            int bf = findBlocsAux(child, env);
-            if (bp != bf) {
-                this.dependanciesManager.addDependancieRelation(bf, bp);
-            }
+            findBlocsAux(child, env);
         }
-        return bp;
     }
 
     public DependanciesManager getDependanciesManager() {
         return this.dependanciesManager;
     }
+    
 
 }

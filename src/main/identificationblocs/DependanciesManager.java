@@ -1,51 +1,80 @@
 package main.identificationblocs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class DependanciesManager implements IDependanciesManager {
 
-    private List<Set<Integer>> relations = new ArrayList<>();
+    private Map<Integer, Set<Integer>> dependencyRelations = new HashMap<>();
+    private Map<Integer, Set<Integer>> mutexRelations = new HashMap<>();
 
-    public void newBloc(int bloc) {
-        // bloc 1 is at position 2
-        // when adding bloc 2, relation size should be 1
-        assert this.relations.size() == bloc: "expanding relations size";
-        this.relations.add(new HashSet<>(bloc)); 
-    }
-
+   
     /**
      * Verifie si deux blocs sont dependants
      */
     @Override
     public boolean areDependant(int bloc1, int bloc2) {
-        return this.relations.get(bloc1).contains(bloc2);
-    }
-
-    @Override
-    public boolean areMutex(int bloc1, int bloc2) {
-        return false;
+        return this.dependencyRelations.get(bloc1).contains(bloc2);
     }
 
     /**
-     * bloc2 depend du bloc 1.
-     * Cela dit, pour genere bloc 2, il faut generer bloc 1.
+     * Verifie si deux blocs sont mutux
      */
     @Override
-    public void addDependancieRelation(int bloc1, int bloc2) {
-        this.relations.get(bloc1).add(bloc2);
+    public boolean areMutex(int bloc1, int bloc2) {
+        return this.mutexRelations.get(bloc1).contains(bloc2);
     }
 
-    @Override
-    public void addMutexRelation(int bloc1, int bloc2) {
-        throw new UnsupportedOperationException("Unimplemented method 'addDependancieRelation'");
+    /**
+     * Nous disposons d'une association entre les variants vers des blocs.
+     * - Un bloc b1 depend d'un bloc b2 si b1 et b2 si s1 est inclus dans s2
+     *  s1 etant l'ensemble des variantes de b1 et s2 l'ensemble des variantes de b2
+     * - Un bloc b1 est mutuellement exclusif avec un bloc b2 si b1 et b2 sont disjoints
+     *  
+     * @param env
+     */
+    public void resolveDependancies(Map<Set<Integer>, Integer> env) {
+        for (Set<Integer> variants1 : env.keySet()) {
+            for (Set<Integer> variants2 : env.keySet()) {
+                if (variants1 != variants2) {
+                    int bloc1 = env.get(variants1);
+                    int bloc2 = env.get(variants2);
+
+                    // bloc1 depend de bloc2 ?
+                    if (variants2.containsAll(variants1)) {
+                        addDependancy(bloc1, bloc2);
+                    }
+                    // bloc1 et 2 sont mutex ?
+                    if (variants1.stream().noneMatch(variants2::contains)) {
+                        addMutex(bloc1, bloc2);
+                    }
+                } 
+            }
+        }
+
     }
 
-    public  List<Set<Integer>> getRelations() {
-        return this.relations;
+    private void addMutex(int bloc1, int bloc2) {
+        this.mutexRelations.putIfAbsent(bloc1, new HashSet<>());
+        this.mutexRelations.get(bloc1).add(bloc2);
     }
 
+    private void addDependancy(int bloc1, int bloc2) {
+        this.dependencyRelations.putIfAbsent(bloc1, new HashSet<>());
+        this.dependencyRelations.get(bloc1).add(bloc2);
+    }
+
+    // getters
+    public Map<Integer, Set<Integer>> getDependencyRelations() {
+        return this.dependencyRelations;
+    }
+
+    public Map<Integer, Set<Integer>> getMutexRelations() {
+        return this.mutexRelations;
+    }
 
 }
