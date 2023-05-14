@@ -18,9 +18,10 @@ public class DependanciesManager implements IDependanciesManager {
      */
     @Override
     public boolean areDependant(int bloc1, int bloc2) {
+        if (bloc1 == bloc2) return true;
         return this.dependencyRelations.get(bloc1).contains(bloc2);
     }
-
+    
     /**
      * Verifie si deux blocs sont mutux
      */
@@ -38,6 +39,11 @@ public class DependanciesManager implements IDependanciesManager {
      * @param env
      */
     public void resolveDependancies(Map<Set<Integer>, Integer> env) {
+        int nbBlocs = env.values().stream().max(Integer::compare).get() + 1;
+        for (int i = 0; i < nbBlocs; i++) {
+            this.dependencyRelations.put(i, new HashSet<>());
+            this.mutexRelations.put(i, new HashSet<>());
+        }
         for (Set<Integer> variants1 : env.keySet()) {
             for (Set<Integer> variants2 : env.keySet()) {
                 if (variants1 != variants2) {
@@ -55,16 +61,15 @@ public class DependanciesManager implements IDependanciesManager {
                 } 
             }
         }
-
+        System.out.println("Dependancies: " + this.dependencyRelations);
+        System.out.println("Mutex: " + this.mutexRelations);
     }
 
     private void addMutex(int bloc1, int bloc2) {
-        this.mutexRelations.putIfAbsent(bloc1, new HashSet<>());
         this.mutexRelations.get(bloc1).add(bloc2);
     }
 
     private void addDependancy(int bloc1, int bloc2) {
-        this.dependencyRelations.putIfAbsent(bloc1, new HashSet<>());
         this.dependencyRelations.get(bloc1).add(bloc2);
     }
 

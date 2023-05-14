@@ -46,13 +46,11 @@ public class Main {
 		List<Integer> toGen = new ArrayList<>();
 		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,
 				blocsIdentifier.getDependanciesManager(), toGen);
-		//codegenerator.generateMaximalCode();
+		codegenerator.generateMaximalCode();
 		startTime = System.currentTimeMillis();
 		codegenerator.export(mergedTree);
 		endTime = System.currentTimeMillis();
 		System.out.println("Duration (code generation): " + (endTime - startTime) + " (ms)");
-		System.out.println("relations: " + blocsIdentifier.getDependanciesManager().getDependencyRelations());
-		System.out.println("relations: " + blocsIdentifier.getDependanciesManager().getMutexRelations());
 	}
 
 	private static List<String> project() {
@@ -63,12 +61,13 @@ public class Main {
 		String notePad = "C:/Users/aboub_bmdb7gr/Downloads/Variant-Notepad";
 		List<String> filesPath = new ArrayList<>();
 		filesPath.add(notePad + "/Notepad-Copy");
+		
 		filesPath.add(notePad + "/Notepad-Cut");
 		filesPath.add(notePad + "/Notepad-Cut-Find");
 		filesPath.add(notePad + "/Notepad-Find");
 		//filesPath.add(notePad + "/Notepad-Full");
 		filesPath.add(notePad + "/Notepad-Undo-Redo");
-
+		
 		GENERATION_PATH = "generatedcode/notepad";
 		return filesPath;
 	}
@@ -88,7 +87,7 @@ public class Main {
 
 	private static List<String> banques() {
 		List<String> filesPath = new ArrayList<>();
-		for (int i = 1; i <= 9; i++) {
+		for (int i = 1; i <= 4; i++) {
 			String variantPath = "./bank-variants/Variant0000" + (i) + "/";
 			filesPath.add(variantPath);
 		}

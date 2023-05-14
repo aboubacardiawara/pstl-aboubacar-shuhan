@@ -33,9 +33,7 @@ public class BlocsIdentifier {
 
     protected void findBlocsAux(IRUAST ruast, Map<Set<Integer>, Integer> env) {
         Set<Integer> currenctVariant = ruast.getVariants();
-        System.out.println("Current variant : " + currenctVariant);
         if (!env.containsKey(currenctVariant)) {
-            System.out.println("Nouveau bloc");
             Integer newBloc = getNextIdForBloc();
             env.put(currenctVariant, newBloc);
         }

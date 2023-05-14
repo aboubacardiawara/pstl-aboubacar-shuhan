@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -253,7 +254,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         }
         FieldDeclaration newDeclaration;
         if (variableDeclarationFragment.getExtraDimensions() > 0) {
-            return playGround(node, variableDeclarationFragment);
+            return newArrayField(node, variableDeclarationFragment);
         } else {
             newFragment.setName(newName);
             newDeclaration = newAST.newFieldDeclaration(newFragment);
@@ -265,14 +266,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         return newDeclaration;
     }
 
-    private ArrayType getArrayType(FieldDeclaration node) {
-        AST newAST = AST.newAST(AST.JLS3);
-        ArrayType arrayType = newAST
-                .newArrayType(newAST.newSimpleType(newAST.newSimpleName(node.getType().toString())));
-        return arrayType;
-    }
-
-    private FieldDeclaration playGround(FieldDeclaration node, VariableDeclarationFragment var) {
+    private FieldDeclaration newArrayField(FieldDeclaration node, VariableDeclarationFragment var) {
         FieldDeclaration fieldDeclaration = (FieldDeclaration) node;
         int modifiers = fieldDeclaration.getModifiers();
         Type type = fieldDeclaration.getType();
@@ -282,6 +276,8 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         AST newAST = AST.newAST(AST.JLS3);
 
         if (type.isPrimitiveType()) {
+            System.out.println("non primitive type: " + type);
+            System.out.println("is primitive");
             PrimitiveType primitiveType = (PrimitiveType) type;
             String typeName = primitiveType.getPrimitiveTypeCode().toString().toLowerCase();
             PrimitiveType simpleType = newAST.newPrimitiveType(PrimitiveType.toCode(typeName));
@@ -297,6 +293,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
             return newFieldDeclaration;
         } else {
+            System.out.println("type: " + type);
             Type simpleType = newAST.newSimpleType(newAST.newSimpleName(node.getType().toString()));
             ArrayType arrayType = newAST.newArrayType(simpleType);
             // create new variableDeclarationFragment
@@ -307,6 +304,27 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             newFieldDeclaration.setType(arrayType);
             newFieldDeclaration.modifiers().addAll(ASTNode.copySubtrees(newAST, node.modifiers()));
             newFieldDeclaration.setJavadoc((Javadoc) ASTNode.copySubtree(newAST, node.getJavadoc()));
+
+            // prise en compte des valeurs d'initialisation
+            VariableDeclarationFragment fragment = fragments.get(0);
+
+            Expression initializer = fragment.getInitializer();
+            if (initializer != null) {
+                // array initializer ?
+                if (fragment.getInitializer() instanceof ArrayInitializer) {
+                    System.out.println("fragment: " + fragment.getInitializer());
+                    ArrayInitializer arrayInitializer = (ArrayInitializer) fragment.getInitializer();
+                    newFragment.setInitializer((Expression) ASTNode.copySubtree(newAST, arrayInitializer));
+                } else if (fragment.getInitializer() instanceof MethodInvocation) {
+                    MethodInvocation arrayInitializer =  (MethodInvocation) fragment.getInitializer();
+                    newFragment.setInitializer((Expression) ASTNode.copySubtree(newAST, arrayInitializer));
+                    
+                }
+                 else {
+                    System.out.println("non array initializer");
+                    System.out.println("fragment: " + fragment.getInitializer());
+                }
+            }
 
             return newFieldDeclaration;
         }
