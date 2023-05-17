@@ -45,7 +45,7 @@ public class Main {
 		endTime = System.currentTimeMillis();
 		System.out.println("Duration (identification bloc): " + (endTime - startTime) + " (ms)");
 		
-		/* GENERATE CODE
+		//GENERATE CODE
 		List<Integer> toGen = new ArrayList<>();
 		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,
 				blocsIdentifier.getDependanciesManager(), toGen);
@@ -54,11 +54,13 @@ public class Main {
 		codegenerator.export(mergedTree);
 		endTime = System.currentTimeMillis();
 		System.out.println("Duration (code generation): " + (endTime - startTime) + " (ms)");
-		*/
+		
 
 		// GEBERATE DOT
+		/* 
 		IExporter dotExporter = new DoteExportWithColor("exported/bank.dot");
 		dotExporter.export(mergedTree);
+		*/
 		 
 	}
 

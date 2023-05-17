@@ -38,27 +38,36 @@ public class JAVACodeExporter implements IExporter {
 
     @Override
     public void export(IRUAST ruast) {
-        createOnlyClassFiles(ruast);
+        createFiles(ruast);
     }
 
     /**
      * 
      */
-    protected void createOnlyClassFiles(IRUAST ruast) {
+    protected void createFiles(IRUAST ruast) {
         createFolder();
-        ruast.getChildren().forEach(child -> {
-            if (shouldBeGenerated(child)) {
-                createFileFromRUAST(child);
+        ruast.getChildren().forEach(fileruast -> {
+            if (shouldBeGenerated(fileruast)) {
+                createFileFromRUAST(fileruast);
             }
         });
     }
 
+    /**
+     * Crée un fichier java à partir d'un RUAST
+     * 
+     * format du nom du fichier: [package.]className
+     * 
+     * @param ruast
+     */
     protected void createFileFromRUAST(IRUAST ruast) {
-        assert ruast.getRoot().getType() == RUASTNodeType.TYPE_DEFINITION : "Should be a type definition";
-        String fileName = Utile.buildClassName(ruast) + ".java";
-        Path filePath = Paths.get(this.folderPath + "/" + fileName);
+        assert ruast.getRoot().getType() == RUASTNodeType.FILE : "Should be a File RUAST";
+        String fileName = extractClassName(ruast) + ".java";
+        String packageName = extractPackageName(ruast);
+        Path filePath = Paths.get(this.folderPath + "/" + packageName + fileName);
         try {
             Files.deleteIfExists(filePath);
+            Files.createDirectories(filePath.getParent());
             Files.createFile(filePath);
             writeSourceCode(filePath, ruast);
         } catch (IOException e) {
@@ -66,11 +75,62 @@ public class JAVACodeExporter implements IExporter {
         }
     }
 
+    /**
+     * Extrait le nom de la classe à partir d'un RUAST
+     * format: [packageName.]className.Java
+     * On veut la partie correspondant à className
+     * 
+     * @param ruast
+     * @return
+     */
+    private String extractPackageName(IRUAST ruast) {
+        String[] fileNameParts = ruast.getName().split("\\.");
+        if (fileNameParts.length == 1) { // dans ce cas c'est le package par defaut
+            return "";
+        }
+
+        // sinon le package correspont à la concatenation des n-1 premiers elements
+        StringBuilder packageNameBuilder = new StringBuilder();
+        for (int i = 0; i < fileNameParts.length - 2; i++) {
+            packageNameBuilder.append(fileNameParts[i]);
+            packageNameBuilder.append("/");
+        }
+        return packageNameBuilder.toString() + "/";
+    }
+
+    /**
+     * Extrait le nom de la classe à partir d'un RUAST
+     * format: [packageName.]className.Java
+     * On veut la partie correspondant à className
+     * 
+     * @param ruast
+     * @return
+     */
+    private String extractClassName(IRUAST ruast) {
+        String[] fileNameParts = ruast.getName().split("\\.");
+        if (fileNameParts.length == 0) { // dans ce cas c'est le package par defaut
+            return fileNameParts[0];
+        }
+        String className = fileNameParts[fileNameParts.length - 2];
+        return className;
+    }
+
     protected void writeSourceCode(Path filePath, IRUAST ruast) throws IOException {
+        assert ruast.getRoot().getType() == RUASTNodeType.FILE : "Should be a File RUAST";
+        
+    
         Writer writer = new FileWriter(filePath.toString());
-        String javaCode = generateCode(ruast);
-        CompilationUnit cu = compilationUnitFromStr(javaCode);
-        writer.write(cu.toString());
+
+        ruast.getChildren().forEach(child -> {
+            if (shouldBeGenerated(child)) {
+                String code = generateCode(child);
+                try {
+                    writer.write(code);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         writer.close();
     }
 
