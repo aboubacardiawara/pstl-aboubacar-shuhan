@@ -5,5 +5,5 @@ package main.adaptation;
  * Variant represente l'element le plus eleve dans la hierarchie
  */
 public enum RUASTNodeType {
-    VARIANT, PACKAGE, TYPE_DEFINITION, FIELD, METHOD, STATEMENT
+    VARIANT, FILE, TYPE_DEFINITION, FIELD, METHOD, STATEMENT
 }

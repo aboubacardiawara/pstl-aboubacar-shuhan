@@ -36,6 +36,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.PrimitiveType.Code;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SimpleName;
 
@@ -77,8 +78,18 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             Utile.debug_print(currentFile);
             return null;
         }
-
-        return groupes.get("class").get(0);
+        
+        Set<Integer> variants = new HashSet<>();
+        String packageName = "";
+        if (cu.getPackage() != null) {
+            packageName = cu.getPackage().getName().toString() + ".";
+        }
+        variants.add(variantId);
+        IRUASTNode node = new RUASTNode(null, 0, variants, RUASTNodeType.FILE);
+        node.setName(packageName + currentFile.getName());
+        IRUAST tree = new RUASTTree(node, null, groupes.get("class"));
+        insert("package", tree);
+        return groupes.get("package").get(0);
     }
 
     @Override
@@ -276,8 +287,6 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         AST newAST = AST.newAST(AST.JLS3);
 
         if (type.isPrimitiveType()) {
-            System.out.println("non primitive type: " + type);
-            System.out.println("is primitive");
             PrimitiveType primitiveType = (PrimitiveType) type;
             String typeName = primitiveType.getPrimitiveTypeCode().toString().toLowerCase();
             PrimitiveType simpleType = newAST.newPrimitiveType(PrimitiveType.toCode(typeName));
@@ -293,7 +302,6 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
 
             return newFieldDeclaration;
         } else {
-            System.out.println("type: " + type);
             Type simpleType = newAST.newSimpleType(newAST.newSimpleName(node.getType().toString()));
             ArrayType arrayType = newAST.newArrayType(simpleType);
             // create new variableDeclarationFragment
@@ -312,7 +320,6 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             if (initializer != null) {
                 // array initializer ?
                 if (fragment.getInitializer() instanceof ArrayInitializer) {
-                    System.out.println("fragment: " + fragment.getInitializer());
                     ArrayInitializer arrayInitializer = (ArrayInitializer) fragment.getInitializer();
                     newFragment.setInitializer((Expression) ASTNode.copySubtree(newAST, arrayInitializer));
                 } else if (fragment.getInitializer() instanceof MethodInvocation) {
@@ -320,14 +327,20 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
                     newFragment.setInitializer((Expression) ASTNode.copySubtree(newAST, arrayInitializer));
                     
                 }
-                 else {
-                    System.out.println("non array initializer");
-                    System.out.println("fragment: " + fragment.getInitializer());
-                }
             }
 
             return newFieldDeclaration;
         }
+    }
+
+    @Override
+    public boolean visit(PackageDeclaration node) {
+        /*
+        IRUASTNode root = new RUASTNode(node, 0, new HashSet<>(), RUASTNodeType.PACKAGE);
+        IRUAST tree = new RUASTTree(root, null, new ArrayList<>());
+        insert("package", tree);
+        */
+        return super.visit(node);
     }
 
     @Override
