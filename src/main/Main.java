@@ -65,7 +65,7 @@ public class Main {
 	}
 
 	private static List<String> project() {
-		return banques();
+		return argouml();
 	}
 
 	private static List<String> notepad() {

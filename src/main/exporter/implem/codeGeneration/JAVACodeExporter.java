@@ -98,6 +98,8 @@ public class JAVACodeExporter implements IExporter {
         return packageNameBuilder.toString() + "/";
     }
 
+    
+
     /**
      * Extrait le nom de la classe à partir d'un RUAST
      * format: [packageName.]className.Java
@@ -118,9 +120,7 @@ public class JAVACodeExporter implements IExporter {
     protected void writeSourceCode(Path filePath, IRUAST ruast) throws IOException {
         assert ruast.getRoot().getType() == RUASTNodeType.FILE : "Should be a File RUAST";
         
-    
         Writer writer = new FileWriter(filePath.toString());
-
         ruast.getChildren().forEach(child -> {
             if (shouldBeGenerated(child)) {
                 String code = generateCode(child);
