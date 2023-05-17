@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import main.adaptation.JDTtoRUASTAdapter;
 import main.adaptation.interfaces.IRUAST;
 import main.exporter.IExporter;
+import main.exporter.implem.DotExporter;
+import main.exporter.implem.DoteExportWithColor;
 import main.exporter.implem.codeGeneration.blocCodeGenerator.FeatureCodeExporter;
 import main.fusion.Merger;
 import main.identificationblocs.BlocsIdentifier;
@@ -43,6 +45,7 @@ public class Main {
 		endTime = System.currentTimeMillis();
 		System.out.println("Duration (identification bloc): " + (endTime - startTime) + " (ms)");
 		
+		/* GENERATE CODE
 		List<Integer> toGen = new ArrayList<>();
 		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,
 				blocsIdentifier.getDependanciesManager(), toGen);
@@ -51,6 +54,12 @@ public class Main {
 		codegenerator.export(mergedTree);
 		endTime = System.currentTimeMillis();
 		System.out.println("Duration (code generation): " + (endTime - startTime) + " (ms)");
+		*/
+
+		// GEBERATE DOT
+		IExporter dotExporter = new DoteExportWithColor("exported/bank.dot");
+		dotExporter.export(mergedTree);
+		 
 	}
 
 	private static List<String> project() {
