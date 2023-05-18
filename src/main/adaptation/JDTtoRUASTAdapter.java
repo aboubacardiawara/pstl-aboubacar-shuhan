@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -78,7 +79,7 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             Utile.debug_print(currentFile);
             return null;
         }
-        
+
         Set<Integer> variants = new HashSet<>();
         String packageName = "";
         if (cu.getPackage() != null) {
@@ -87,7 +88,10 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
         variants.add(variantId);
         IRUASTNode node = new RUASTNode(null, 0, variants, RUASTNodeType.FILE);
         node.setName(packageName + currentFile.getName());
-        IRUAST tree = new RUASTTree(node, null, groupes.get("class"));
+        List<IRUAST> children = groupes.get("class");
+        if (groupes.get("import") != null)
+            children.addAll(groupes.get("import"));
+        IRUAST tree = new RUASTTree(node, null, children);
         insert("package", tree);
         return groupes.get("package").get(0);
     }
@@ -121,6 +125,24 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
             superClass = node.getSuperclassType().toString();
         }
         return node.getName().toString() + ">" + superClass;
+    }
+
+    /**
+     * Prise en compte des imports.
+     * On va les considerer comme des statements.
+     * Il seront rattaché au noeud de type file au même niveau que
+     * les TypeDeclaration.
+     */
+    @Override
+    public boolean visit(ImportDeclaration node) {
+        Set<Integer> variants = new HashSet<>();
+        variants.add(variantId);
+        IRUASTNode root = new RUASTNode(node, 0, variants, RUASTNodeType.STATEMENT);
+        root.setName(node.toString());
+        IRUAST ruast = new RUASTTree(root, null,
+                new ArrayList<>());
+        insert("import", ruast);
+        return super.visit(node);
     }
 
     /**
@@ -323,9 +345,9 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
                     ArrayInitializer arrayInitializer = (ArrayInitializer) fragment.getInitializer();
                     newFragment.setInitializer((Expression) ASTNode.copySubtree(newAST, arrayInitializer));
                 } else if (fragment.getInitializer() instanceof MethodInvocation) {
-                    MethodInvocation arrayInitializer =  (MethodInvocation) fragment.getInitializer();
+                    MethodInvocation arrayInitializer = (MethodInvocation) fragment.getInitializer();
                     newFragment.setInitializer((Expression) ASTNode.copySubtree(newAST, arrayInitializer));
-                    
+
                 }
             }
 
@@ -336,10 +358,11 @@ public class JDTtoRUASTAdapter extends ASTVisitor implements IAdapter {
     @Override
     public boolean visit(PackageDeclaration node) {
         /*
-        IRUASTNode root = new RUASTNode(node, 0, new HashSet<>(), RUASTNodeType.PACKAGE);
-        IRUAST tree = new RUASTTree(root, null, new ArrayList<>());
-        insert("package", tree);
-        */
+         * IRUASTNode root = new RUASTNode(node, 0, new HashSet<>(),
+         * RUASTNodeType.PACKAGE);
+         * IRUAST tree = new RUASTTree(root, null, new ArrayList<>());
+         * insert("package", tree);
+         */
         return super.visit(node);
     }
 

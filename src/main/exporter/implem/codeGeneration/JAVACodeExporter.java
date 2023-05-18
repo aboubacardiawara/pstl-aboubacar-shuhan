@@ -121,17 +121,56 @@ public class JAVACodeExporter implements IExporter {
         assert ruast.getRoot().getType() == RUASTNodeType.FILE : "Should be a File RUAST";
         
         Writer writer = new FileWriter(filePath.toString());
-        ruast.getChildren().forEach(child -> {
-            if (shouldBeGenerated(child)) {
-                String code = generateCode(child);
-                try {
-                    writer.write(code);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+
+        // write package declaration
+        writer.write(buildPackageDeclaration(ruast));
+
+        // les import
+        ruast.getChildren()
+        .stream()
+        .filter(child -> child.getRoot().getType() == RUASTNodeType.STATEMENT)
+        .forEach(child -> writeImport(writer, child));
+
+        // les classes
+        ruast.getChildren()
+        .stream()
+        .filter(child -> child.getRoot().getType() == RUASTNodeType.TYPE_DEFINITION)
+        .forEach(child -> writeClass(writer, child));
+
         writer.close();
+    }
+
+    private String buildPackageDeclaration(IRUAST ruast) {
+        
+        String packageName = extractPackageName(ruast);
+        if (packageName.equals("/")) {
+            return "";
+        }
+        System.out.println(">" + packageName);
+        packageName = packageName.substring(0, packageName.length() - 2);
+        return "package " + packageName + ";\n\n";
+    }
+
+    private void writeImport(Writer writer, IRUAST child) {
+        if (shouldBeGenerated(child)) {
+            String code = getImportDeclarationCode(child);
+            try {
+                writer.write(code);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void writeClass(Writer writer, IRUAST child) {
+        if (shouldBeGenerated(child)) {
+            String code = getClassCode(child);
+            try {
+                writer.write(code);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     protected CompilationUnit compilationUnitFromStr(String sourceCode) {
@@ -154,8 +193,8 @@ public class JAVACodeExporter implements IExporter {
         }
     }
 
-    protected String generateCode(IRUAST ruast) {
-        return getClassCode(ruast);
+    private String getImportDeclarationCode(IRUAST ruast) {
+        return ruast.getName();
     }
 
     protected String getClassCode(IRUAST ruast) {
