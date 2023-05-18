@@ -146,7 +146,6 @@ public class JAVACodeExporter implements IExporter {
         if (packageName.equals("/")) {
             return "";
         }
-        System.out.println(">" + packageName);
         packageName = packageName.substring(0, packageName.length() - 2);
         return "package " + packageName + ";\n\n";
     }

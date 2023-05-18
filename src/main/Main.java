@@ -16,6 +16,7 @@ import main.identificationblocs.BlocsIdentifier;
 public class Main {
 	private static int VARIANT_ID = 1;
 	private static String GENERATION_PATH;
+	private static int NB_XP = 1000;
 
 	private static List<IRUAST> paralleleAdaptation(List<String> filesPath) {
 		return filesPath.stream()
@@ -27,41 +28,24 @@ public class Main {
 	private static void exampleParallele() {
 		List<String> filesPath = project();
 
-		long startTime = System.currentTimeMillis();
+		// ADAPTATION
 		List<IRUAST> ruasts = paralleleAdaptation(filesPath);
-		long endTime = System.currentTimeMillis();
-		System.out.println("Duration (adaptation): " + (endTime - startTime) + " (ms)");
 
-		startTime = System.currentTimeMillis();
+		// FUSION
 		IRUAST mergedTree = ruasts.subList(1, ruasts.size()).stream().reduce(
 				ruasts.get(0),
 				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
 
-		endTime = System.currentTimeMillis();
-		System.out.println("Duration (merge): " + (endTime - startTime) + " (ms)");	
-		startTime = System.currentTimeMillis();
 		BlocsIdentifier blocsIdentifier = new BlocsIdentifier();
 		blocsIdentifier.findBlocs(mergedTree);
-		endTime = System.currentTimeMillis();
-		System.out.println("Duration (identification bloc): " + (endTime - startTime) + " (ms)");
-		
-		//GENERATE CODE
+
+		// GENERATE CODE
 		List<Integer> toGen = new ArrayList<>();
 		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,
 				blocsIdentifier.getDependanciesManager(), toGen);
 		codegenerator.generateMaximalCode();
-		startTime = System.currentTimeMillis();
 		codegenerator.export(mergedTree);
-		endTime = System.currentTimeMillis();
-		System.out.println("Duration (code generation): " + (endTime - startTime) + " (ms)");
-		
 
-		// GEBERATE DOT
-		/* 
-		IExporter dotExporter = new DoteExportWithColor("exported/bank.dot");
-		dotExporter.export(mergedTree);
-		*/
-		 
 	}
 
 	private static List<String> project() {
@@ -72,13 +56,13 @@ public class Main {
 		String notePad = "C:/Users/aboub_bmdb7gr/Downloads/Variant-Notepad";
 		List<String> filesPath = new ArrayList<>();
 		filesPath.add(notePad + "/Notepad-Copy");
-		
+
 		filesPath.add(notePad + "/Notepad-Cut");
 		filesPath.add(notePad + "/Notepad-Cut-Find");
 		filesPath.add(notePad + "/Notepad-Find");
-		//filesPath.add(notePad + "/Notepad-Full");
+		// filesPath.add(notePad + "/Notepad-Full");
 		filesPath.add(notePad + "/Notepad-Undo-Redo");
-		
+
 		GENERATION_PATH = "generatedcode/notepad";
 		return filesPath;
 	}
@@ -108,7 +92,80 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		exampleParallele();
+
+		experimentation();
 	}
 
+	private static void experimentation() {
+		mesureDureeFusion();
+	}
+
+	private static List<IRUAST> mesureDureeAdaptation() {
+		List<String> filesPath = project();
+
+		long startTime = System.currentTimeMillis();
+		List<IRUAST> ruast = new ArrayList<>();
+		for (int i = 0; i < NB_XP; i++)
+			ruast = paralleleAdaptation(filesPath);
+		long endTime = System.currentTimeMillis();
+		int dureeMoynne = (int) ((endTime - startTime) / NB_XP);
+		System.out.println("Duree moyenne (adaptation): " + dureeMoynne + " (ms)");
+
+		return ruast;
+	}
+
+	private static IRUAST mesureDureeFusion() {
+
+		List<IRUAST> ruasts = mesureDureeAdaptation();
+
+		long startTime = System.currentTimeMillis();
+		IRUAST ruast = null;
+		for (int i = 0; i < NB_XP; i++)
+			ruast = fusion(ruasts);
+		long endTime = System.currentTimeMillis();
+		int dureeMoynne = (int) ((endTime - startTime) / NB_XP);
+		System.out.println("Duree moyenne (fusion): " + dureeMoynne + " (ms)");
+
+		return ruast;
+	}
+
+	private static void mesureDureeCodeGen() {
+		IRUAST ruastMax = mesureDureeFusion();
+
+		// debut generation de code
+		long startTime = System.currentTimeMillis();
+		IRUAST ruast = null;
+		for (int i = 0; i < NB_XP; i++)
+			ruast = fusion(ruasts);
+		long endTime = System.currentTimeMillis();
+		int dureeMoynne = (int) ((endTime - startTime) / NB_XP);
+		System.out.println("Duree moyenne (fusion): " + dureeMoynne + " (ms)");
+	}
+
+	private static IRUAST fusion(List<IRUAST> ruasts) {
+		IRUAST mergedTree = ruasts.subList(1, ruasts.size()).stream().reduce(
+				ruasts.get(0),
+				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
+		return mergedTree;
+	}
+
+	private static void codeGeneration(IRUAST mergedTree) {
+		BlocsIdentifier blocsIdentifier = new BlocsIdentifier();
+		blocsIdentifier.findBlocs(mergedTree);
+
+		List<Integer> toGen = new ArrayList<>();
+		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,
+				blocsIdentifier.getDependanciesManager(), toGen);
+		codegenerator.generateMaximalCode();
+		codegenerator.export(mergedTree);
+
+		// debut generation de code
+		long startTime = System.currentTimeMillis();
+		IRUAST ruast = null;
+		for (int i = 0; i < NB_XP; i++)
+			codegenerator.export(mergedTree);
+		long endTime = System.currentTimeMillis();
+		int dureeMoynne = (int) ((endTime - startTime) / NB_XP);
+		System.out.println("Duree moyenne (generation de code): " + dureeMoynne + " (ms)");
+	}
 }
