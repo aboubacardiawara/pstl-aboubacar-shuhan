@@ -10,6 +10,7 @@ public class BlocsIdentifier {
 
     private Integer id = 0;
     private DependanciesManager dependanciesManager;
+    private IRUAST ruast;
 
 
     public BlocsIdentifier() {
@@ -23,10 +24,9 @@ public class BlocsIdentifier {
 
     public IRUAST findBlocs(IRUAST ruast) {
         Map<Set<Integer>, Integer> env = new HashMap<>();
-        System.out.println("before env: " + env);
+        this.ruast = ruast;
         findBlocsAux(ruast, env);
         // env sera exploité pour definir les relation entre les blocs
-        System.out.println("after env: " + env + " " + id);
         this.dependanciesManager.resolveDependancies(env);
         return ruast;
     }
@@ -49,5 +49,8 @@ public class BlocsIdentifier {
         return this.dependanciesManager;
     }
     
+    public IRUAST getRuast() {
+        return this.ruast;
+    }
 
 }

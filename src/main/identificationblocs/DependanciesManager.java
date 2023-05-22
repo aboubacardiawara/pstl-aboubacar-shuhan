@@ -61,8 +61,6 @@ public class DependanciesManager implements IDependanciesManager {
                 } 
             }
         }
-        System.out.println("Dependancies: " + this.dependencyRelations);
-        System.out.println("Mutex: " + this.mutexRelations);
     }
 
     private void addMutex(int bloc1, int bloc2) {
@@ -80,6 +78,14 @@ public class DependanciesManager implements IDependanciesManager {
 
     public Map<Integer, Set<Integer>> getMutexRelations() {
         return this.mutexRelations;
+    }
+
+    public int getBlocsCount() {
+        return this.dependencyRelations.size();
+    }
+
+    public Map<Integer, Set<Integer>> getDependancies() {
+        return dependencyRelations;
     }
 
 }

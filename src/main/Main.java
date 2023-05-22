@@ -16,7 +16,7 @@ import main.identificationblocs.BlocsIdentifier;
 public class Main {
 	private static int VARIANT_ID = 1;
 	private static String GENERATION_PATH;
-	private static int NB_XP = 1000;
+	private static int NB_XP = 5;
 
 	private static List<IRUAST> paralleleAdaptation(List<String> filesPath) {
 		return filesPath.stream()
@@ -39,12 +39,27 @@ public class Main {
 		BlocsIdentifier blocsIdentifier = new BlocsIdentifier();
 		blocsIdentifier.findBlocs(mergedTree);
 
+		// print dependancies
+		Finder finder = new Finder(mergedTree);
+		finder.findByBloc(6).forEach(ruast -> {
+			System.out.println(ruast.getRoot());
+		});
+		System.out.println(blocsIdentifier.getDependanciesManager().getDependancies());
+
+
 		// GENERATE CODE
+		/*
 		List<Integer> toGen = new ArrayList<>();
 		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,
 				blocsIdentifier.getDependanciesManager(), toGen);
 		codegenerator.generateMaximalCode();
 		codegenerator.export(mergedTree);
+		System.out.println("bloc count: " + blocsIdentifier.getDependanciesManager().getBlocsCount());
+		*/
+
+		// generate dot
+		//new DoteExportWithColor("exported/bank.dot").export(mergedTree);
+		
 
 	}
 
@@ -60,7 +75,7 @@ public class Main {
 		filesPath.add(notePad + "/Notepad-Cut");
 		filesPath.add(notePad + "/Notepad-Cut-Find");
 		filesPath.add(notePad + "/Notepad-Find");
-		// filesPath.add(notePad + "/Notepad-Full");
+		//filesPath.add(notePad + "/Notepad-Full");
 		filesPath.add(notePad + "/Notepad-Undo-Redo");
 
 		GENERATION_PATH = "generatedcode/notepad";
@@ -92,17 +107,17 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-
-		experimentation();
+		exampleParallele();
 	}
 
 	private static void experimentation() {
-		mesureDureeFusion();
+		mesureDureeCodeGen();
 	}
 
 	private static List<IRUAST> mesureDureeAdaptation() {
 		List<String> filesPath = project();
 
+		// duree adaptation
 		long startTime = System.currentTimeMillis();
 		List<IRUAST> ruast = new ArrayList<>();
 		for (int i = 0; i < NB_XP; i++)
@@ -118,6 +133,7 @@ public class Main {
 
 		List<IRUAST> ruasts = mesureDureeAdaptation();
 
+		// debut fusion
 		long startTime = System.currentTimeMillis();
 		IRUAST ruast = null;
 		for (int i = 0; i < NB_XP; i++)
@@ -129,18 +145,7 @@ public class Main {
 		return ruast;
 	}
 
-	private static void mesureDureeCodeGen() {
-		IRUAST ruastMax = mesureDureeFusion();
-
-		// debut generation de code
-		long startTime = System.currentTimeMillis();
-		IRUAST ruast = null;
-		for (int i = 0; i < NB_XP; i++)
-			ruast = fusion(ruasts);
-		long endTime = System.currentTimeMillis();
-		int dureeMoynne = (int) ((endTime - startTime) / NB_XP);
-		System.out.println("Duree moyenne (fusion): " + dureeMoynne + " (ms)");
-	}
+	
 
 	private static IRUAST fusion(List<IRUAST> ruasts) {
 		IRUAST mergedTree = ruasts.subList(1, ruasts.size()).stream().reduce(
@@ -149,23 +154,45 @@ public class Main {
 		return mergedTree;
 	}
 
-	private static void codeGeneration(IRUAST mergedTree) {
-		BlocsIdentifier blocsIdentifier = new BlocsIdentifier();
-		blocsIdentifier.findBlocs(mergedTree);
+	private static BlocsIdentifier mesureIdentificationBlocs() {
+		
+		IRUAST ruastMax = mesureDureeFusion();
+		BlocsIdentifier blocsIdentifier = null;
+
+		// debut 
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < NB_XP; i++) {
+			blocsIdentifier = new BlocsIdentifier();
+			blocsIdentifier.findBlocs(ruastMax);
+		}
+
+		long endTime = System.currentTimeMillis();
+		int dureeMoynne = (int) ((endTime - startTime) / NB_XP);
+		System.out.println("Duree moyenne (identification bloc): " + dureeMoynne + " (ms)");
+		return blocsIdentifier;
+	}
+
+	private static void mesureDureeCodeGen() {
+		BlocsIdentifier blocsIdentifier = mesureIdentificationBlocs();
+
+		// debut generation de code
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < NB_XP; i++)
+			codeGeneration(((BlocsIdentifier) blocsIdentifier).getRuast(), blocsIdentifier);
+		long endTime = System.currentTimeMillis();
+		int dureeMoynne = (int) ((endTime - startTime) / NB_XP);
+		System.out.println("Duree moyenne (codegen): " + dureeMoynne + " (ms)");
+	}
+
+	private static void codeGeneration(IRUAST mergedTree, BlocsIdentifier blocsIdentifier) {
 
 		List<Integer> toGen = new ArrayList<>();
 		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,
 				blocsIdentifier.getDependanciesManager(), toGen);
 		codegenerator.generateMaximalCode();
-		codegenerator.export(mergedTree);
 
-		// debut generation de code
-		long startTime = System.currentTimeMillis();
-		IRUAST ruast = null;
-		for (int i = 0; i < NB_XP; i++)
-			codegenerator.export(mergedTree);
-		long endTime = System.currentTimeMillis();
-		int dureeMoynne = (int) ((endTime - startTime) / NB_XP);
-		System.out.println("Duree moyenne (generation de code): " + dureeMoynne + " (ms)");
+		codegenerator.export(mergedTree);
 	}
+
+	
 }
