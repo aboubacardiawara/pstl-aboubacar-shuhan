@@ -18,6 +18,10 @@ public class App {
 	private static String CONFIG_FILE = "configuration.json";
 
 	private static void featuresExtraction(List<String> variantsPaths) {
+		if (variantsPaths.size() < 2) {
+			System.out.println("No enough variant to process [at least 2]");
+			return;
+		}
 		
 		// 1. ETAPE D'ADAPTATION DES ASTS EN RUASTS
 		List<IRUAST> ruasts = 
@@ -51,7 +55,8 @@ public class App {
 
 	
 	public static void main(String[] args) {
-		featuresExtraction(variantsPaths)
+		List<String> variantsPaths = new ArrayList<>();
+		featuresExtraction(variantsPaths);
 	}
 
 }
