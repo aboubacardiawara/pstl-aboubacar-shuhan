@@ -4,12 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import com.sorbonne.pstl.adaptation.JDTtoRUASTAdapter;
 import com.sorbonne.pstl.exporter.IExporter;
 import com.sorbonne.pstl.exporter.implem.codeGeneration.blocCodeGenerator.FeatureCodeExporter;
 import com.sorbonne.pstl.fusion.Merger;
 import com.sorbonne.pstl.identificationblocs.BlocsIdentifier;
 import com.sorbonne.pstl.ruast.interfaces.IRUAST;
+
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.FileReader;
+import java.io.IOException;
 
 
 public class App {
@@ -53,9 +63,32 @@ public class App {
 		
 	}
 
+	private static List<String> loadVariantsPaths() {
+		try {
+			JSONParser parser = new JSONParser();
+			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(CONFIG_FILE));
+	
+			JSONArray variantsPaths = (JSONArray) jsonObject.get("variantsPaths");
+			String variantMax = (String) jsonObject.get("variantmax");
+	
+			System.out.println("Variants Paths:");
+			for (Object path : variantsPaths) {
+				System.out.println(path.toString());
+			}
+	
+			System.out.println("Variant Max: " + variantMax);
+			GENERATION_PATH = variantMax;
+	
+			return variantsPaths;
+		} catch (IOException | ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	
 	public static void main(String[] args) {
-		List<String> variantsPaths = new ArrayList<>();
+		List<String> variantsPaths = loadVariantsPaths();
 		featuresExtraction(variantsPaths);
 	}
 
