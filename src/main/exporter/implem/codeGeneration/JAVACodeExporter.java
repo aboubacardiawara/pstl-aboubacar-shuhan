@@ -28,12 +28,14 @@ import main.util.Utile;
 public class JAVACodeExporter implements IExporter {
 
     private static final String TAB_CHAR = "    ";
+    private static final boolean VERBOSE = false;
     protected String folderPath;
     protected boolean shoulGenAllFeatures;
     private int currentLineNum = 1;
 
     /** Utile pour generer les fichiers de configuration de mobioseforge */
     protected String fileName = "";
+    private String currentFileName = "";
 
     public JAVACodeExporter(String folderPath) {
         super();
@@ -43,7 +45,9 @@ public class JAVACodeExporter implements IExporter {
 
     @Override
     public void export(IRUAST ruast) {
+        display("Exporting...");
         createFiles(ruast);
+        display("Exporting done");
     }
 
     /**
@@ -68,6 +72,7 @@ public class JAVACodeExporter implements IExporter {
     protected void createFileFromRUAST(IRUAST ruast) {
         assert ruast.getRoot().getType() == RUASTNodeType.FILE : "Should be a File RUAST";
         String fileName = extractClassName(ruast) + ".java";
+        this.currentFileName = this.folderPath + "/" + fileName;
         String packageName = extractPackageName(ruast);
         Path filePath = Paths.get(this.folderPath + "/" + packageName + fileName);
         try {
@@ -136,7 +141,7 @@ public class JAVACodeExporter implements IExporter {
         assert ruast.getRoot().getType() == RUASTNodeType.FILE : "Should be a File RUAST";
         
         Writer writer = new FileWriter(filePath.toString());
-        System.out.println("Writing file: " + filePath.toString());
+        display("Writing file: " + filePath.toString());
         this.fileName = filePath.toString();
 
         // write package declaration
@@ -145,7 +150,7 @@ public class JAVACodeExporter implements IExporter {
         // les import
         writeImportDeclarations(ruast, writer);
 
-        System.out.println("[start] class line: " + currentLineNum);
+        
         // On écrit les classes
         writeClassesDefinition(ruast, writer);
 
@@ -158,6 +163,7 @@ public class JAVACodeExporter implements IExporter {
      * @param writer
      */
     private void writeClassesDefinition(IRUAST ruast, Writer writer) {
+        assert ruast.getRoot().getType() == RUASTNodeType.FILE : "Should be a File RUAST";
         ruast.getChildren()
         .stream()
         .filter(child -> child.getRoot().getType() == RUASTNodeType.TYPE_DEFINITION)
@@ -214,20 +220,25 @@ public class JAVACodeExporter implements IExporter {
      * Generation du code d'une classe.
      * On adapte la ligne courante 
      * @param writer
-     * @param child
+     * @param ruast
      */
-    private void writeClass(Writer writer, IRUAST child) {
-        if (shouldBeGenerated(child)) {
-            String code = getClassCode(child);
+    private void writeClass(Writer writer, IRUAST ruast) {
+        display("[start] class line: " + currentLineNum);
+        ruast.setFileName(currentFileName);
+        ruast.setStartLine(currentLineNum);
+        if (shouldBeGenerated(ruast)) {
+            String code = getClassCode(ruast);
             // maj du numéro de ligne courant
-            this.currentLineNum += code.split("\n").length;
             try {
                 writer.write(code);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        display("[end] class line: " + currentLineNum);
+        ruast.setEndLine(currentLineNum);
     }
+
 
     protected CompilationUnit compilationUnitFromStr(String sourceCode) {
         ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -348,7 +359,9 @@ public class JAVACodeExporter implements IExporter {
      */
     protected String dispath(IRUAST ruast) {
         if (ruast.getRoot().getType() == RUASTNodeType.FIELD) {
-            System.out.println("[start] Field: " + this.currentLineNum);
+            display("[start] Field: " + this.currentLineNum);
+            ruast.setFileName(currentFileName);
+            ruast.setStartLine(currentLineNum);
             return TAB_CHAR + getFieldSourceCode(ruast);
         }
         return getMethodSourceCode(ruast);
@@ -376,11 +389,14 @@ public class JAVACodeExporter implements IExporter {
      * @return
      */
     protected String getMethodSourceCode(IRUAST ruast) {
+        display("---> " + currentFileName);
         if (!shouldBeGenerated(ruast)) {
             return "\n";
         }
         StringBuilder methodBodyBuilder = new StringBuilder();
-        System.out.println("[start] Method: " + this.currentLineNum);
+        display("[start] Method: " + this.currentLineNum);
+        ruast.setFileName(currentFileName);
+        ruast.setStartLine(currentLineNum);
         methodBodyBuilder.append(TAB_CHAR + getMethodSignature(ruast.getRoot().getJdtNode()));
         methodBodyBuilder.append("{\n");
         this.currentLineNum++;
@@ -390,12 +406,14 @@ public class JAVACodeExporter implements IExporter {
 
                     this.currentLineNum += code.split("\n").length;
                     int endLine = this.currentLineNum-1;
-                    System.out.println("[End] Instruction: " + endLine);
+                    display("[End] Instruction: " + endLine);
+                    child.setEndLine(endLine);
                     methodBodyBuilder.append(formatMethodInstruction(code));
                 });
 
         methodBodyBuilder.append(TAB_CHAR + "}\n");
-        System.out.println("[end] Method: " + this.currentLineNum);
+        display("[end] Method: " + this.currentLineNum);
+        ruast.setEndLine(currentLineNum);
         this.currentLineNum += 2;
         return methodBodyBuilder.toString();
     }
@@ -466,7 +484,9 @@ public class JAVACodeExporter implements IExporter {
      * @return
      */
     protected String getInstructionSourceCode(IRUAST ruast) {
-        System.out.println("[start] Instruction: " + this.currentLineNum);
+        display("[start] Instruction: " + this.currentLineNum);
+        ruast.setFileName(currentFileName);
+        ruast.setStartLine(currentLineNum);
         if (!shouldBeGenerated(ruast)) {
             return "\n";
         }
@@ -491,5 +511,11 @@ public class JAVACodeExporter implements IExporter {
         this.shoulGenAllFeatures = true;
     }
 
+
+    private void display(String string) {
+        if (VERBOSE) {
+            System.out.println(string);
+        }
+    }
 
 }

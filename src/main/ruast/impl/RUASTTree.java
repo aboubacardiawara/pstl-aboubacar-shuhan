@@ -100,4 +100,54 @@ public class RUASTTree implements IRUAST {
         return forgeData;
     }
 
+    @Override
+    public int setStartLine(int startLine) {
+        return this.forgeData.setStartLine(startLine);
+    }
+
+    @Override
+    public int setEndLine(int endLine) {
+        return this.forgeData.setEndLine(endLine);
+    }
+
+    @Override
+    public int getStartLine() {
+        return this.forgeData.getStartLine();
+    }
+
+    @Override
+    public int getEndLine() {
+        return this.forgeData.getEndLine();
+    }
+
+    @Override
+    public int getStartColumn() {
+        return this.forgeData.getStartColumn();
+    }
+
+    @Override
+    public int getEndColumn() {
+        return this.forgeData.getEndColumn();
+    }
+
+    @Override
+    public int setStartColumn(int startColumn) {
+        return this.forgeData.setStartColumn(startColumn);
+    }
+
+    @Override
+    public int setEndColumn(int endColumn) {
+        return this.forgeData.setEndColumn(endColumn);
+    }
+
+    @Override
+    public String fileName() {
+        return this.forgeData.fileName();
+    }
+
+    @Override
+    public void setFileName(String fileName) {
+        this.forgeData.setFileName(fileName);
+    }
+
 }

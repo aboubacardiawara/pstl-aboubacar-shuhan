@@ -5,7 +5,7 @@ import java.util.Set;
 
 import main.ruast.impl.RUASTTree;
 
-public interface IRUAST {
+public interface IRUAST extends IForgeData {
 
     public IRUASTNode getRoot();
 
