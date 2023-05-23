@@ -1,6 +1,6 @@
 package main.exporter;
 
-import main.adaptation.interfaces.IRUAST;
+import main.ruast.interfaces.IRUAST;
 
 public interface IExporter {
     public void export(IRUAST ruast);

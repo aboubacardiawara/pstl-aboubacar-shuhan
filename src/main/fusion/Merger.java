@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import main.adaptation.RUASTNode;
-import main.adaptation.RUASTTree;
-import main.adaptation.interfaces.IRUAST;
-import main.adaptation.interfaces.IRUASTNode;
 import main.fusion.interfaces.IMerger;
+import main.ruast.impl.RUASTNode;
+import main.ruast.impl.RUASTTree;
+import main.ruast.interfaces.IRUAST;
+import main.ruast.interfaces.IRUASTNode;
 import main.util.Utile;
 
 public class Merger implements IMerger {

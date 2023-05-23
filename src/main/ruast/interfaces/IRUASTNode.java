@@ -1,10 +1,10 @@
-package main.adaptation.interfaces;
+package main.ruast.interfaces;
 
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
-import main.adaptation.RUASTNodeType;
+import main.ruast.impl.RUASTNodeType;
 
 public interface IRUASTNode {
 

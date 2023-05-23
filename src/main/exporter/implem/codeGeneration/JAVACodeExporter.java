@@ -6,7 +6,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-
+import java.util.stream.Stream;
 import java.nio.file.Path;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -20,15 +20,20 @@ import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Modifier;
 
-import main.adaptation.RUASTNodeType;
-import main.adaptation.interfaces.IRUAST;
 import main.exporter.IExporter;
+import main.ruast.impl.RUASTNodeType;
+import main.ruast.interfaces.IRUAST;
 import main.util.Utile;
 
 public class JAVACodeExporter implements IExporter {
 
+    private static final String TAB_CHAR = "";
     protected String folderPath;
     protected boolean shoulGenAllFeatures;
+    private int currentLineNum = 1;
+
+    /** Utile pour generer les fichiers de configuration de mobioseforge */
+    protected String fileName = "";
 
     public JAVACodeExporter(String folderPath) {
         super();
@@ -39,6 +44,7 @@ public class JAVACodeExporter implements IExporter {
     @Override
     public void export(IRUAST ruast) {
         createFiles(ruast);
+        System.out.println("fin: " + currentLineNum);
     }
 
     /**
@@ -117,27 +123,70 @@ public class JAVACodeExporter implements IExporter {
         return className;
     }
 
+    /**
+     * Construit le code source de toute une classe à partir d'un RUAST.
+     * Il prend un noeud correspondant à un fichier en paramètre.
+     * Et reconstruit le code source de toutes les classes qu'il contient.
+     * On s'arrange à conserver les positions de toutes les unités de code.
+     * Elles seront utiles pour visualiser les fonctionnalités dans mobioseforge.
+     * @param filePath le chemin du fichier à écrire
+     * @param ruast le RUAST correspondant au fichier
+     * @throws IOException 
+     */
     protected void writeSourceCode(Path filePath, IRUAST ruast) throws IOException {
         assert ruast.getRoot().getType() == RUASTNodeType.FILE : "Should be a File RUAST";
         
         Writer writer = new FileWriter(filePath.toString());
+        System.out.println("Writing file: " + filePath.toString());
+        this.fileName = filePath.toString();
 
         // write package declaration
-        writer.write(buildPackageDeclaration(ruast));
+        writePackageDeclaration(ruast, writer);
 
         // les import
+        writeImportDeclarations(ruast, writer);
+
+        System.out.println("class line: " + currentLineNum);
+        // On écrit les classes
+        writeClassesDefinition(ruast, writer);
+
+        writer.close();
+    }
+
+    /**
+     * Ecriture des declarations de classes.
+     * @param ruast
+     * @param writer
+     */
+    private void writeClassesDefinition(IRUAST ruast, Writer writer) {
+        ruast.getChildren()
+        .stream()
+        .filter(child -> child.getRoot().getType() == RUASTNodeType.TYPE_DEFINITION)
+        .forEach(child -> writeClass(writer, child));
+    }
+
+    /**
+     * Ecrit toute les instructions d'importation d'un fichier.
+     * Ajuste le numéro de ligne courant en fonction du nombre d'import.
+     * @param ruast
+     * @param writer
+     */
+    private void writeImportDeclarations(IRUAST ruast, Writer writer) {
         ruast.getChildren()
         .stream()
         .filter(child -> child.getRoot().getType() == RUASTNodeType.STATEMENT)
         .forEach(child -> writeImport(writer, child));
 
-        // les classes
-        ruast.getChildren()
-        .stream()
-        .filter(child -> child.getRoot().getType() == RUASTNodeType.TYPE_DEFINITION)
-        .forEach(child -> writeClass(writer, child));
+        // on ajuste le numéro de ligne courant en ajoutant le nombre d'imports
+        this.currentLineNum += ruast.getChildren().size();
+    }
 
-        writer.close();
+    private void writePackageDeclaration(IRUAST ruast, Writer writer) throws IOException {
+        String packageDeclaration = buildPackageDeclaration(ruast);
+        if (packageDeclaration != "") {
+            this.currentLineNum++;
+        }
+        writer.write(packageDeclaration);
     }
 
     private String buildPackageDeclaration(IRUAST ruast) {
@@ -151,6 +200,7 @@ public class JAVACodeExporter implements IExporter {
     }
 
     private void writeImport(Writer writer, IRUAST child) {
+        assert fileName != "" : "Le chemin du fichier d'ecriture doit avoir ete initialise";
         if (shouldBeGenerated(child)) {
             String code = getImportDeclarationCode(child);
             try {
@@ -161,9 +211,17 @@ public class JAVACodeExporter implements IExporter {
         }
     }
 
+    /**
+     * Generation du code d'une classe.
+     * On adapte la ligne courante 
+     * @param writer
+     * @param child
+     */
     private void writeClass(Writer writer, IRUAST child) {
         if (shouldBeGenerated(child)) {
             String code = getClassCode(child);
+            // maj du numéro de ligne courant
+            this.currentLineNum += code.split("\n").length;
             try {
                 writer.write(code);
             } catch (IOException e) {
@@ -200,6 +258,7 @@ public class JAVACodeExporter implements IExporter {
         StringBuilder classCodeBuilder = new StringBuilder();
         classCodeBuilder.append(getClassSignature(ruast));
         classCodeBuilder.append("{\n");
+        this.currentLineNum++;
         classCodeBuilder.append(getClassBodyCode(ruast));
         classCodeBuilder.append("}");
 
@@ -290,7 +349,7 @@ public class JAVACodeExporter implements IExporter {
      */
     protected String dispath(IRUAST ruast) {
         if (ruast.getRoot().getType() == RUASTNodeType.FIELD) {
-            return getFieldSourceCode(ruast);
+            return TAB_CHAR + getFieldSourceCode(ruast);
         }
         return getMethodSourceCode(ruast);
     }
@@ -303,7 +362,9 @@ public class JAVACodeExporter implements IExporter {
      */
     protected String getFieldSourceCode(IRUAST ruast) {
         if (shouldBeGenerated(ruast)) {
-            return ruast.getRoot().getJdtNode().toString();
+            String code = ruast.getRoot().getJdtNode().toString();
+            this.currentLineNum += 1 + code.split("\n").length;
+            return code;
         }
         return "\n";
     }
@@ -319,16 +380,26 @@ public class JAVACodeExporter implements IExporter {
             return "\n";
         }
         StringBuilder methodBodyBuilder = new StringBuilder();
-        methodBodyBuilder.append(getMethodSignature(ruast.getRoot().getJdtNode()));
+        System.out.println("Method: " + this.currentLineNum);
+        methodBodyBuilder.append(TAB_CHAR + getMethodSignature(ruast.getRoot().getJdtNode()));
         methodBodyBuilder.append("{\n");
+        this.currentLineNum++;
         ruast.getChildren().forEach(
                 child -> {
                     String code = getInstructionSourceCode(child);
-                    methodBodyBuilder.append(code);
+                    
+                    this.currentLineNum += code.split("\n").length;
+                    methodBodyBuilder.append(formatMethodInstruction(code));
                 });
 
-        methodBodyBuilder.append("}");
+        methodBodyBuilder.append(TAB_CHAR + "}");
+        this.currentLineNum++;
         return methodBodyBuilder.toString();
+    }
+
+    private String formatMethodInstruction(String instruction) {
+        //return TAB_CHAR + TAB_CHAR + instruction.replaceAll("\n", "\n" + TAB_CHAR + TAB_CHAR);
+        return instruction;
     }
 
     protected static String getMethodSignature(ASTNode astNode) {
@@ -415,4 +486,6 @@ public class JAVACodeExporter implements IExporter {
     public void generateMaximalCode() {
         this.shoulGenAllFeatures = true;
     }
+
+
 }

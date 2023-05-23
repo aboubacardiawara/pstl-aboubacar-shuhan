@@ -5,13 +5,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import main.adaptation.JDTtoRUASTAdapter;
-import main.adaptation.interfaces.IRUAST;
 import main.exporter.IExporter;
-import main.exporter.implem.DotExporter;
-import main.exporter.implem.DoteExportWithColor;
 import main.exporter.implem.codeGeneration.blocCodeGenerator.FeatureCodeExporter;
 import main.fusion.Merger;
 import main.identificationblocs.BlocsIdentifier;
+import main.ruast.interfaces.IRUAST;
 
 public class Main {
 	private static int VARIANT_ID = 1;
@@ -41,30 +39,21 @@ public class Main {
 
 		// print dependancies
 		Finder finder = new Finder(mergedTree);
-		finder.findByBloc(6).forEach(ruast -> {
+		finder.findByBloc(19).forEach(ruast -> {
 			System.out.println(ruast.getRoot());
 		});
-		System.out.println(blocsIdentifier.getDependanciesManager().getDependancies());
-
 
 		// GENERATE CODE
-		/*
 		List<Integer> toGen = new ArrayList<>();
 		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,
 				blocsIdentifier.getDependanciesManager(), toGen);
 		codegenerator.generateMaximalCode();
 		codegenerator.export(mergedTree);
-		System.out.println("bloc count: " + blocsIdentifier.getDependanciesManager().getBlocsCount());
-		*/
-
-		// generate dot
-		//new DoteExportWithColor("exported/bank.dot").export(mergedTree);
 		
-
 	}
 
 	private static List<String> project() {
-		return notepad();
+		return banques();
 	}
 
 	private static List<String> notepad() {

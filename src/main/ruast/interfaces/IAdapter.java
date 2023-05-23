@@ -1,4 +1,4 @@
-package main.adaptation.interfaces;
+package main.ruast.interfaces;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 

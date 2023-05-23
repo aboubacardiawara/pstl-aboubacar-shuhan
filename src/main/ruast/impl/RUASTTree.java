@@ -1,11 +1,12 @@
-package main.adaptation;
+package main.ruast.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import main.adaptation.interfaces.IRUASTNode;
-import main.adaptation.interfaces.IRUAST;
+import main.ruast.interfaces.IForgeData;
+import main.ruast.interfaces.IRUAST;
+import main.ruast.interfaces.IRUASTNode;
 
 /**
  * Ceci est une representaiton compacte de l'AST d'un code java.base/
@@ -17,8 +18,10 @@ public class RUASTTree implements IRUAST {
     private IRUASTNode root;
     private List<IRUAST> children;
     private IRUAST parent;
+    private IForgeData forgeData;
 
     public RUASTTree(IRUASTNode adaptedRoot, IRUAST adaptedParent, List<IRUAST> adaptedChildren) {
+        this.forgeData = new ForgeData();
         root = adaptedRoot;
         children = new ArrayList<>();
         adaptedChildren.stream().forEach(child -> addChild(child));
@@ -90,6 +93,11 @@ public class RUASTTree implements IRUAST {
         }
 
         return 1 + sizeSubtrees;
+    }
+
+    @Override
+    public IForgeData getForgeData() {
+        return forgeData;
     }
 
 }

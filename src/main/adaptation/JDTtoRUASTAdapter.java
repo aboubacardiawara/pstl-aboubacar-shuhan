@@ -41,10 +41,13 @@ import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SimpleName;
 
-import main.adaptation.interfaces.IAdapter;
-import main.adaptation.interfaces.IRUASTNode;
+import main.ruast.impl.RUASTNode;
+import main.ruast.impl.RUASTNodeType;
+import main.ruast.impl.RUASTTree;
+import main.ruast.interfaces.IAdapter;
+import main.ruast.interfaces.IRUAST;
+import main.ruast.interfaces.IRUASTNode;
 import main.util.Utile;
-import main.adaptation.interfaces.IRUAST;
 
 /**
  * Adapte l'AST de JDT en notre struture.

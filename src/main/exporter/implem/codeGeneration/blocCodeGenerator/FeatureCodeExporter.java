@@ -2,9 +2,9 @@ package main.exporter.implem.codeGeneration.blocCodeGenerator;
 
 import java.util.List;
 
-import main.adaptation.interfaces.IRUAST;
 import main.exporter.implem.codeGeneration.JAVACodeExporter;
 import main.identificationblocs.DependanciesManager;
+import main.ruast.interfaces.IRUAST;
 
 public class FeatureCodeExporter extends JAVACodeExporter {
 

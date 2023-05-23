@@ -2,7 +2,7 @@ package main.fusion.interfaces;
 
 import java.util.List;
 
-import main.adaptation.interfaces.IRUAST;
+import main.ruast.interfaces.IRUAST;
 
 public interface IMerger {
 	public IRUAST merge(IRUAST a1, IRUAST a2);

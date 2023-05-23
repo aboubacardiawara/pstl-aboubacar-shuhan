@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
-import main.adaptation.interfaces.IRUAST;
-import main.adaptation.interfaces.IRUASTNode;
 import main.exporter.IExporter;
+import main.ruast.interfaces.IRUAST;
+import main.ruast.interfaces.IRUASTNode;
 
 public class DotExporter implements IExporter {
 

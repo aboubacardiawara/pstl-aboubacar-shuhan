@@ -3,8 +3,8 @@ package main;
 import java.util.ArrayList;
 import java.util.List;
 
-import main.adaptation.RUASTNodeType;
-import main.adaptation.interfaces.IRUAST;
+import main.ruast.impl.RUASTNodeType;
+import main.ruast.interfaces.IRUAST;
 
 public class Finder {
 

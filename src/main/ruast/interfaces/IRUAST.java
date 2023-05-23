@@ -1,9 +1,9 @@
-package main.adaptation.interfaces;
+package main.ruast.interfaces;
 
 import java.util.List;
 import java.util.Set;
 
-import main.adaptation.RUASTTree;
+import main.ruast.impl.RUASTTree;
 
 public interface IRUAST {
 
@@ -24,4 +24,6 @@ public interface IRUAST {
     public Set<Integer> getVariants();
 
     public int size();
+
+    public IForgeData getForgeData();
 }

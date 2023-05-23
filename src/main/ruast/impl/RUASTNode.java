@@ -1,11 +1,11 @@
-package main.adaptation;
+package main.ruast.impl;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
-import main.adaptation.interfaces.IRUASTNode;
+import main.ruast.interfaces.IRUASTNode;
 import main.util.Utile;
 
 public class RUASTNode implements IRUASTNode {

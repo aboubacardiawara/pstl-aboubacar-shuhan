@@ -1,6 +1,6 @@
 package main.exporter.implem.codeGeneration;
 
-import main.adaptation.interfaces.IRUAST;
+import main.ruast.interfaces.IRUAST;
 
 public class OriginalCodeBuilderFromRUAST {
 

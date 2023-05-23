@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import main.adaptation.interfaces.IRUAST;
+import main.ruast.interfaces.IRUAST;
 
 public class BlocsIdentifier {
 
