@@ -60,6 +60,11 @@ public class App {
 				blocsIdentifier.getDependanciesManager(), toGen);
 		codegenerator.generateMaximalCode();
 		codegenerator.export(mergedTree);
+
+		// 5. EXPORTATIOON DES FICHIERS DE CONFIGURATION FORGE
+		ForgeExporter forgeExporter = new ForgeExporter(GENERATION_PATH);
+		forgeExporter.export(blocsIdentifier.getDependanciesManager());
+		
 		
 	}
 
