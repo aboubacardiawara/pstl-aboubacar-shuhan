@@ -27,7 +27,7 @@ import main.util.Utile;
 
 public class JAVACodeExporter implements IExporter {
 
-    private static final String TAB_CHAR = "";
+    private static final String TAB_CHAR = "    ";
     protected String folderPath;
     protected boolean shoulGenAllFeatures;
     private int currentLineNum = 1;
@@ -44,7 +44,6 @@ public class JAVACodeExporter implements IExporter {
     @Override
     public void export(IRUAST ruast) {
         createFiles(ruast);
-        System.out.println("fin: " + currentLineNum);
     }
 
     /**
@@ -146,7 +145,7 @@ public class JAVACodeExporter implements IExporter {
         // les import
         writeImportDeclarations(ruast, writer);
 
-        System.out.println("class line: " + currentLineNum);
+        System.out.println("[start] class line: " + currentLineNum);
         // On écrit les classes
         writeClassesDefinition(ruast, writer);
 
@@ -349,7 +348,7 @@ public class JAVACodeExporter implements IExporter {
      */
     protected String dispath(IRUAST ruast) {
         if (ruast.getRoot().getType() == RUASTNodeType.FIELD) {
-            System.out.println("Field: " + this.currentLineNum);
+            System.out.println("[start] Field: " + this.currentLineNum);
             return TAB_CHAR + getFieldSourceCode(ruast);
         }
         return getMethodSourceCode(ruast);
@@ -381,7 +380,7 @@ public class JAVACodeExporter implements IExporter {
             return "\n";
         }
         StringBuilder methodBodyBuilder = new StringBuilder();
-        System.out.println("Method: " + this.currentLineNum);
+        System.out.println("[start] Method: " + this.currentLineNum);
         methodBodyBuilder.append(TAB_CHAR + getMethodSignature(ruast.getRoot().getJdtNode()));
         methodBodyBuilder.append("{\n");
         this.currentLineNum++;
@@ -390,17 +389,20 @@ public class JAVACodeExporter implements IExporter {
                     String code = getInstructionSourceCode(child);
 
                     this.currentLineNum += code.split("\n").length;
+                    int endLine = this.currentLineNum-1;
+                    System.out.println("[End] Instruction: " + endLine);
                     methodBodyBuilder.append(formatMethodInstruction(code));
                 });
 
-        methodBodyBuilder.append(TAB_CHAR + "}");
-        this.currentLineNum++;
+        methodBodyBuilder.append(TAB_CHAR + "}\n");
+        System.out.println("[end] Method: " + this.currentLineNum);
+        this.currentLineNum += 2;
         return methodBodyBuilder.toString();
     }
 
     private String formatMethodInstruction(String instruction) {
-        //return TAB_CHAR + TAB_CHAR + instruction.replaceAll("\n", "\n" + TAB_CHAR + TAB_CHAR);
-        return instruction;
+        String instructionWithoutLastLineBreak = instruction.substring(0, instruction.length() - 1);
+        return TAB_CHAR + TAB_CHAR + instructionWithoutLastLineBreak.replaceAll("\n", "\n" + TAB_CHAR + TAB_CHAR) + "\n";
     }
 
     protected static String getMethodSignature(ASTNode astNode) {
@@ -464,7 +466,7 @@ public class JAVACodeExporter implements IExporter {
      * @return
      */
     protected String getInstructionSourceCode(IRUAST ruast) {
-        System.out.println("Instruction: " + this.currentLineNum);
+        System.out.println("[start] Instruction: " + this.currentLineNum);
         if (!shouldBeGenerated(ruast)) {
             return "\n";
         }
