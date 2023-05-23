@@ -1,0 +1,9 @@
+{
+    "variantsPaths": [
+        "./bank-variants/Variant00001",
+        "./bank-variants/Variant00002",
+        "./bank-variants/Variant00003",
+        "./bank-variants/Variant00004"
+    ],
+    "variantmax": "./bank-variants/VariantMax"
+}
