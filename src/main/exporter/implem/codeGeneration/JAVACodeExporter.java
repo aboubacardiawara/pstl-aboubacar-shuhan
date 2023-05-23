@@ -349,6 +349,7 @@ public class JAVACodeExporter implements IExporter {
      */
     protected String dispath(IRUAST ruast) {
         if (ruast.getRoot().getType() == RUASTNodeType.FIELD) {
+            System.out.println("Field: " + this.currentLineNum);
             return TAB_CHAR + getFieldSourceCode(ruast);
         }
         return getMethodSourceCode(ruast);
@@ -387,7 +388,7 @@ public class JAVACodeExporter implements IExporter {
         ruast.getChildren().forEach(
                 child -> {
                     String code = getInstructionSourceCode(child);
-                    
+
                     this.currentLineNum += code.split("\n").length;
                     methodBodyBuilder.append(formatMethodInstruction(code));
                 });
@@ -463,6 +464,7 @@ public class JAVACodeExporter implements IExporter {
      * @return
      */
     protected String getInstructionSourceCode(IRUAST ruast) {
+        System.out.println("Instruction: " + this.currentLineNum);
         if (!shouldBeGenerated(ruast)) {
             return "\n";
         }
