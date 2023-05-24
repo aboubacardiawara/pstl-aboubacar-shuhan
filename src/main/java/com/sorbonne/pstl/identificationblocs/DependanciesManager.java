@@ -1,5 +1,6 @@
 package com.sorbonne.pstl.identificationblocs;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Set;
 
 public class DependanciesManager implements IDependanciesManager {
 
+    private static final int ROOT_BLOC = -2;
     private Map<Integer, Set<Integer>> dependencyRelations = new HashMap<>();
     private Map<Integer, Set<Integer>> mutexRelations = new HashMap<>();
 
@@ -86,4 +88,25 @@ public class DependanciesManager implements IDependanciesManager {
         return dependencyRelations;
     }
 
+    @Override
+    public int getParentOf(int bloc) {
+        if (this.dependencyRelations.get(bloc).size() == 0) 
+            return ROOT_BLOC;
+        return this.dependencyRelations.get(bloc).stream().findFirst().get();
+    }
+
+    @Override
+    public int blocsCount() {
+        return this.dependencyRelations.size();
+    }
+
+    @Override
+    public Collection<Integer> getmutexOf(int bloc1) {
+        return this.mutexRelations.get(bloc1);
+    }
+    
+    @Override
+    public Collection<Integer> getDependanciesOf(int bloc1) {
+        return this.dependencyRelations.get(bloc1);
+    }
 }

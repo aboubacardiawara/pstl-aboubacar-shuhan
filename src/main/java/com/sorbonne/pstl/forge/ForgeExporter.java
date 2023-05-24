@@ -1,16 +1,19 @@
 package com.sorbonne.pstl.forge;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 
 import com.sorbonne.pstl.exporter.IExporter;
 import com.sorbonne.pstl.ruast.interfaces.IRUAST;
 import com.sorbonne.pstl.identificationblocs.IDependanciesManager;
 
-public class ForgeExporter
-{
+public class ForgeExporter {
     protected IDependanciesManager dependanciesManager;
     protected String path;
 
@@ -18,7 +21,7 @@ public class ForgeExporter
         this.dependanciesManager = dependanciesManager;
         this.path = path + "/.mobioseforge/";
     }
-    
+
     public void export(IRUAST ruast) {
         try {
             createForgeConfigFiles();
@@ -26,11 +29,12 @@ public class ForgeExporter
             e.printStackTrace();
         }
         writeFeatureMapFile();
+        writeMapsFile();
     }
 
     public void createForgeConfigFiles() throws Exception {
         File folder = new File(path);
-        
+
         // delete folder if it exists
         if (folder.exists()) {
             folder.delete();
@@ -44,28 +48,32 @@ public class ForgeExporter
         File mapsFile = new File(path + "maps.json");
 
         fmFile.createNewFile();
-        mapsFile.createNewFile();   
+        mapsFile.createNewFile();
     }
-    /*
-     "key":"-2",
-      "name":"Feature Model",
-      "type":"Core",
-      "parent":"-1",
-      "parentRelation":"Normal",
-      "presence":"Mandatory",
-      "lgFile":"",
-      "role":"",
-      "hexColor":"#fff",
-      "help":"",
-      "nodeWeight":-1
-     */
 
     public void writeFeatureMapFile() {
-        JSONObject fmObject = new JSONObject();
-        JSONObject coreObject = buildCoreJsonObject();
-        
-        fmObject.put("core", coreObject);
-        System.out.println(fmObject);
+        FMBuilder fmBuilder = new FMBuilder();
+        fmBuilder.setDependeniesManager(dependanciesManager);
+        JSONObject fmObject = fmBuilder.build();
+    
+        String fmFile = path + "fm.json";
+    
+        try (FileWriter writer = new FileWriter(fmFile)) {
+            writer.write(fmObject.toString());
+            System.out.println("JSONObject has been written to the file.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JSONArray buildFeaturesJsonArray() {
+        JSONArray featuresArray = new JSONArray();
+        for (int bloc = 0; bloc < dependanciesManager.blocsCount(); bloc++) {
+            JSONObject featureObject = buildFeatureJsonObject(bloc);
+            featuresArray.add(featureObject);
+        }
+        return featuresArray;
+
     }
 
     protected JSONObject buildCoreJsonObject() {
@@ -86,26 +94,10 @@ public class ForgeExporter
     }
 
     protected JSONObject buildFeatureJsonObject(int bloc) {
-        /*
-         "key":"0",
-         "name":"Base",
-         "type":"Functionality feature",
-         "parent":"-2",
-         "parentRelation":"Normal",
-         "presence":"Mandatory",
-         "lgFile":"",
-         "role":"",
-         "hexColor":"#ff2600",
-         "help":""
-         */
         JSONObject featureObject = new JSONObject();
         String name = "Bloc " + bloc;
         String presence = "Optional";
-        String parent = "-2";
-        
-        
-        // le feature parent
-        
+        int parentId = dependanciesManager.getParentOf(bloc);
 
         if (bloc == 0) {
             name = "Base";
@@ -114,7 +106,7 @@ public class ForgeExporter
         featureObject.put("key", bloc);
         featureObject.put("name", name);
         featureObject.put("type", "Functionality feature");
-        featureObject.put("parent", parent);
+        featureObject.put("parent", String.valueOf(parentId));
         featureObject.put("parentRelation", "Normal");
         featureObject.put("presence", presence);
         featureObject.put("lgFile", "");
@@ -123,5 +115,9 @@ public class ForgeExporter
         featureObject.put("help", "");
 
         return featureObject;
+    }
+
+    protected void writeMapsFile() {
+    
     }
 }
