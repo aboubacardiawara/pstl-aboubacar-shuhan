@@ -1,4 +1,4 @@
-package com.sorbonne.pstl.visitor;
+package com.sorbonne.pstl.exampleVisitor;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;

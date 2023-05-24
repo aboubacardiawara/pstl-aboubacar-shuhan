@@ -1,4 +1,4 @@
-package com.sorbonne.pstl.exporter.implem.codeGeneration;
+package com.sorbonne.pstl.exporter.implem.codegenerator;
 
 import com.sorbonne.pstl.ruast.interfaces.IRUAST;
 

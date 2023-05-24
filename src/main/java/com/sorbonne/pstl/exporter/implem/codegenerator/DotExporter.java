@@ -1,4 +1,4 @@
-package com.sorbonne.pstl.exporter.implem;
+package com.sorbonne.pstl.exporter.implem.codegenerator;
 
 import java.io.FileWriter;
 import java.io.IOException;

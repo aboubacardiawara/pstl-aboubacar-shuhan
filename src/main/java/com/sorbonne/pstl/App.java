@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import com.sorbonne.pstl.adaptation.JDTtoRUASTAdapter;
 import com.sorbonne.pstl.exporter.IExporter;
-import com.sorbonne.pstl.exporter.implem.codeGeneration.blocCodeGenerator.FeatureCodeExporter;
+import com.sorbonne.pstl.exporter.implem.codegenerator.blocCodeGenerator.FeatureCodeExporter;
 import com.sorbonne.pstl.fusion.Merger;
 import com.sorbonne.pstl.identificationblocs.BlocsIdentifier;
 import com.sorbonne.pstl.ruast.interfaces.IRUAST;
@@ -45,15 +45,12 @@ public class App {
 				ruasts.get(0),
 				(ruast1, ruast2) -> new Merger().merge(ruast1, ruast2));
 
+		
+		// 3. ETAPE D'IDENTIFICATION DES BLOCS ET DES CONTRAINTES
 		BlocsIdentifier blocsIdentifier = new BlocsIdentifier();
 		blocsIdentifier.findBlocs(mergedTree);
-
-		// 3. ETAPE D'IDENTIFICATION DES BLOCS ET DES CONTRAINTES
-		Finder finder = new Finder(mergedTree);
-		finder.findByBloc(19).forEach(ruast -> {
-			System.out.println(ruast.getRoot());
-		});
-
+		System.out.println(blocsIdentifier.getDependanciesManager().getDependencyRelations());
+		
 		// 4. ETAPE DE GENERATION DU CODE
 		List<Integer> toGen = new ArrayList<>();
 		IExporter codegenerator = new FeatureCodeExporter(GENERATION_PATH,

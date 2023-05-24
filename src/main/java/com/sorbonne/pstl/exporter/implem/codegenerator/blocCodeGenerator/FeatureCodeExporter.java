@@ -1,8 +1,8 @@
-package com.sorbonne.pstl.exporter.implem.codeGeneration.blocCodeGenerator;
+package com.sorbonne.pstl.exporter.implem.codegenerator.blocCodeGenerator;
 
 import java.util.List;
 
-import com.sorbonne.pstl.exporter.implem.codeGeneration.JAVACodeExporter;
+import com.sorbonne.pstl.exporter.implem.codegenerator.JAVACodeExporter;
 import com.sorbonne.pstl.identificationblocs.DependanciesManager;
 import com.sorbonne.pstl.ruast.interfaces.IRUAST;
 

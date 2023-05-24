@@ -44,11 +44,7 @@ public class ForgeExporter
         File mapsFile = new File(path + "maps.json");
 
         fmFile.createNewFile();
-        mapsFile.createNewFile();
-
-
-
-        
+        mapsFile.createNewFile();   
     }
     /*
      "key":"-2",
@@ -66,13 +62,13 @@ public class ForgeExporter
 
     public void writeFeatureMapFile() {
         JSONObject fmObject = new JSONObject();
-        JSONObject coreObject = buildCoreObject();
-
+        JSONObject coreObject = buildCoreJsonObject();
+        
         fmObject.put("core", coreObject);
         System.out.println(fmObject);
     }
 
-    protected JSONObject buildCoreObject() {
+    protected JSONObject buildCoreJsonObject() {
         JSONObject coreObject = new JSONObject();
         coreObject.put("key", "-2");
         coreObject.put("name", "Feature Model");
@@ -87,5 +83,45 @@ public class ForgeExporter
         coreObject.put("nodeWeight", -1);
 
         return coreObject;
+    }
+
+    protected JSONObject buildFeatureJsonObject(int bloc) {
+        /*
+         "key":"0",
+         "name":"Base",
+         "type":"Functionality feature",
+         "parent":"-2",
+         "parentRelation":"Normal",
+         "presence":"Mandatory",
+         "lgFile":"",
+         "role":"",
+         "hexColor":"#ff2600",
+         "help":""
+         */
+        JSONObject featureObject = new JSONObject();
+        String name = "Bloc " + bloc;
+        String presence = "Optional";
+        String parent = "-2";
+        
+        
+        // le feature parent
+        
+
+        if (bloc == 0) {
+            name = "Base";
+            presence = "Manadatory";
+        }
+        featureObject.put("key", bloc);
+        featureObject.put("name", name);
+        featureObject.put("type", "Functionality feature");
+        featureObject.put("parent", parent);
+        featureObject.put("parentRelation", "Normal");
+        featureObject.put("presence", presence);
+        featureObject.put("lgFile", "");
+        featureObject.put("role", "");
+        featureObject.put("hexColor", "#ff2600");
+        featureObject.put("help", "");
+
+        return featureObject;
     }
 }
