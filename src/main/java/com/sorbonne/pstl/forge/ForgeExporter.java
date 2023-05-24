@@ -58,7 +58,7 @@ public class ForgeExporter {
         fmBuilder.setDependeniesManager(dependanciesManager);
         JSONObject fmObject = fmBuilder.build();
     
-        String fmFile = path + "fm.json";
+        String fmFile = path + "features.fm.json";
     
         try (FileWriter writer = new FileWriter(fmFile)) {
             writer.write(fmObject.toString());
@@ -73,7 +73,7 @@ public class ForgeExporter {
         MAPSBuilder mapsBuilder = new MAPSBuilder(dependanciesManager, ruast);
         JSONObject mapObject = mapsBuilder.build();
 
-        String mapsFile = path + "maps.json";
+        String mapsFile = path + "features.maps.json";
 
         try (FileWriter writer = new FileWriter(mapsFile)) {
             writer.write(mapObject.toString());
