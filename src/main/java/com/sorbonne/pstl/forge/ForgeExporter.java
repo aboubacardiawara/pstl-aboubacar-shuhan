@@ -20,7 +20,7 @@ public class ForgeExporter {
 
     public ForgeExporter(IDependanciesManager dependanciesManager, String path) {
         this.dependanciesManager = dependanciesManager;
-        this.path = path + "/.mobioseforge/";
+        this.path = path + "/.mobioos-forge/";
     }
 
     public void export(IRUAST ruast) {
@@ -46,8 +46,8 @@ public class ForgeExporter {
         folder.mkdir();
 
         // create two files fm.forge and maps.json
-        File fmFile = new File(path + "fm.json");
-        File mapsFile = new File(path + "maps.json");
+        File fmFile = new File(path + "features.fm.forge");
+        File mapsFile = new File(path + "features.maps.forge");
 
         fmFile.createNewFile();
         mapsFile.createNewFile();
