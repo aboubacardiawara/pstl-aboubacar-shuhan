@@ -14,6 +14,8 @@ import com.sorbonne.pstl.ruast.interfaces.IRUAST;
 import com.sorbonne.pstl.identificationblocs.IDependanciesManager;
 
 public class ForgeExporter {
+    private static final String FM_FILE_NAME = "features.fm.forge";
+    private static final String MAPS_FILE_NAME = "features.maps.forge";
     protected IDependanciesManager dependanciesManager;
     protected String path;
     private IRUAST ruast;
@@ -46,8 +48,8 @@ public class ForgeExporter {
         folder.mkdir();
 
         // create two files fm.forge and maps.json
-        File fmFile = new File(path + "features.fm.forge");
-        File mapsFile = new File(path + "features.maps.forge");
+        File fmFile = new File(path + FM_FILE_NAME);
+        File mapsFile = new File(path + MAPS_FILE_NAME);
 
         fmFile.createNewFile();
         mapsFile.createNewFile();
@@ -58,7 +60,7 @@ public class ForgeExporter {
         fmBuilder.setDependeniesManager(dependanciesManager);
         JSONObject fmObject = fmBuilder.build();
     
-        String fmFile = path + "features.fm.json";
+        String fmFile = path + FM_FILE_NAME;
     
         try (FileWriter writer = new FileWriter(fmFile)) {
             writer.write(fmObject.toString());
@@ -73,7 +75,7 @@ public class ForgeExporter {
         MAPSBuilder mapsBuilder = new MAPSBuilder(dependanciesManager, ruast);
         JSONObject mapObject = mapsBuilder.build();
 
-        String mapsFile = path + "features.maps.json";
+        String mapsFile = path + MAPS_FILE_NAME;
 
         try (FileWriter writer = new FileWriter(mapsFile)) {
             writer.write(mapObject.toString());
