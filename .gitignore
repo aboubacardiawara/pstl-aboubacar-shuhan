@@ -22,3 +22,6 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 bin/
+
+## exclude forge config files
+bank-variants/VariantMax/.mobioseforge/

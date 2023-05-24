@@ -11,7 +11,7 @@ import com.sorbonne.pstl.exporter.implem.codeGeneration.blocCodeGenerator.Featur
 import com.sorbonne.pstl.fusion.Merger;
 import com.sorbonne.pstl.identificationblocs.BlocsIdentifier;
 import com.sorbonne.pstl.ruast.interfaces.IRUAST;
-
+import com.sorbonne.pstl.forge.ForgeExporter;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -62,8 +62,8 @@ public class App {
 		codegenerator.export(mergedTree);
 
 		// 5. EXPORTATIOON DES FICHIERS DE CONFIGURATION FORGE
-		ForgeExporter forgeExporter = new ForgeExporter(GENERATION_PATH);
-		forgeExporter.export(blocsIdentifier.getDependanciesManager());
+		ForgeExporter forgeExporter = new ForgeExporter(blocsIdentifier.getDependanciesManager(), GENERATION_PATH);
+		forgeExporter.export(mergedTree);
 		
 		
 	}
