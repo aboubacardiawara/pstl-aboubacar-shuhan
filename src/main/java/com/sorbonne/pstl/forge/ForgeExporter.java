@@ -16,6 +16,7 @@ import com.sorbonne.pstl.identificationblocs.IDependanciesManager;
 public class ForgeExporter {
     protected IDependanciesManager dependanciesManager;
     protected String path;
+    private IRUAST ruast;
 
     public ForgeExporter(IDependanciesManager dependanciesManager, String path) {
         this.dependanciesManager = dependanciesManager;
@@ -23,6 +24,7 @@ public class ForgeExporter {
     }
 
     public void export(IRUAST ruast) {
+        this.ruast = ruast;
         try {
             createForgeConfigFiles();
         } catch (Exception e) {
@@ -66,58 +68,18 @@ public class ForgeExporter {
         }
     }
 
-    private JSONArray buildFeaturesJsonArray() {
-        JSONArray featuresArray = new JSONArray();
-        for (int bloc = 0; bloc < dependanciesManager.blocsCount(); bloc++) {
-            JSONObject featureObject = buildFeatureJsonObject(bloc);
-            featuresArray.add(featureObject);
-        }
-        return featuresArray;
-
-    }
-
-    protected JSONObject buildCoreJsonObject() {
-        JSONObject coreObject = new JSONObject();
-        coreObject.put("key", "-2");
-        coreObject.put("name", "Feature Model");
-        coreObject.put("type", "Core");
-        coreObject.put("parent", "-1");
-        coreObject.put("parentRelation", "Normal");
-        coreObject.put("presence", "Mandatory");
-        coreObject.put("lgFile", "");
-        coreObject.put("role", "");
-        coreObject.put("hexColor", "#fff");
-        coreObject.put("help", "");
-        coreObject.put("nodeWeight", -1);
-
-        return coreObject;
-    }
-
-    protected JSONObject buildFeatureJsonObject(int bloc) {
-        JSONObject featureObject = new JSONObject();
-        String name = "Bloc " + bloc;
-        String presence = "Optional";
-        int parentId = dependanciesManager.getParentOf(bloc);
-
-        if (bloc == 0) {
-            name = "Base";
-            presence = "Manadatory";
-        }
-        featureObject.put("key", bloc);
-        featureObject.put("name", name);
-        featureObject.put("type", "Functionality feature");
-        featureObject.put("parent", String.valueOf(parentId));
-        featureObject.put("parentRelation", "Normal");
-        featureObject.put("presence", presence);
-        featureObject.put("lgFile", "");
-        featureObject.put("role", "");
-        featureObject.put("hexColor", "#ff2600");
-        featureObject.put("help", "");
-
-        return featureObject;
-    }
 
     protected void writeMapsFile() {
-    
+        MAPSBuilder mapsBuilder = new MAPSBuilder(dependanciesManager, ruast);
+        JSONObject mapObject = mapsBuilder.build();
+
+        String mapsFile = path + "maps.json";
+
+        try (FileWriter writer = new FileWriter(mapsFile)) {
+            writer.write(mapObject.toString());
+            System.out.println("JSONObject has been written to the file.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
